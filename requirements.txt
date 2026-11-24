@@ -1,0 +1,12 @@
+# Python 3.11. For the frozen GPU stack, install the CUDA 12.8 Torch wheel
+# using the PyTorch wheel index before installing these requirements.
+numpy==1.26.4
+scipy==1.16.0
+scikit-learn==1.6.1
+threadpoolctl==3.6.0
+torch==2.9.1
+torchvision==0.24.1
+mne==1.11.0
+einops==0.8.1
+timm==1.0.22
+pandas==2.2.2

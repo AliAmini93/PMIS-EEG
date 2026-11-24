@@ -1,0 +1,659 @@
+{
+  "status": "FROZEN",
+  "protocol_id": "R10-B-SLIDING-WINDOW-C5-PREDICTION-LEE2019-v1",
+  "frozen_utc": "2026-11-06T14:11:35.475572+00:00",
+  "pre_registration": {
+    "question": "Does the frozen R7-C5 (plus C4/C4b at 2 s) single-copy temporal-response curve predict the relative own-trial exposure effects of sliding-window training sets at benchmark level?",
+    "evidence_status": "Lee2019 participants and recordings are those of C3/C4/C5 (not an independent cohort). Track A / Track B / C0 arms were never fitted. This is a prospective prediction of new pipeline endpoints on known participants, not a replication on independent participants.",
+    "primary_scale": "correct-class probability points (C5's scale) for H2-H4; BA for H1; BA reported for everything",
+    "H1": "Track A realistic contamination: L_s - G_s (BA) > 0 for each stride and model (Holm over 6). Context only; L and G differ in rows and held-out-run support (declared).",
+    "H2": "Track B matched overlap effect: E(lag) - E(2000) for lag in 62..1000 and E(2000) (same trial, no shared sample) per model (p scale; Holm over 12). OWN vs OTHER match rows, class composition, held-out-run provenance, number of distinct held-out source trials and window offset; they do not match content.",
+    "H3_trackB_primary": "Per model, participant retention rho(lag) = E(lag)/E(0) vs the frozen curve R(lag) (functional-free: one window per exposed anchor). Loss = sum over 6 lags of squared error; test D = L(baseline) - L(C5) > 0 vs OVL (shared-sample fraction), BIN (any overlap = copy) and EXACT (only copies leak); Holm over 6. Accuracy: 90 % CI of the cohort error within +/-0.10 at every lag (TOST, alpha 0.05).",
+    "H3A_trackA_secondary": "Per model, q(s) = E_A(s)/E_X(s) vs the frozen PRIMARY additive functional sum R/(1+sum R) (first-order influence: effects of added rows sum) over lags s, 2s, ..., 2000; baselines OVL, CNT (count / density), BIN, EXACT in the same functional; Holm over 8. Nearest-lag and saturating functionals are reported descriptively and never used for a decision.",
+    "discriminability_rule": "a comparison counts toward a classification only if prediction and baseline differ by >= 0.05 at some condition (computed from frozen predictions only).",
+    "classification": "per model and track: CONTRADICTED if a discriminating baseline is significantly better; SUPPORTED_STRONG if C5 beats every discriminating baseline (Holm) and is within +/-0.10 everywhere; SUPPORTED_RELATIVE if it beats every discriminating baseline only; PARTIAL if some; else NOT_SUPPORTED.",
+    "overall": "PREDICTIVE_TRANSFER_SUPPORTED if Track B EEGNet SUPPORTED_STRONG, Track B TS+LR at least PARTIAL and Track A EEGNet at least SUPPORTED_RELATIVE; PARTIAL_TRANSFER if Track B EEGNet at least SUPPORTED_RELATIVE; else NO_PREDICTIVE_TRANSFER.",
+    "H4": "Curve swap: each model's own C5 curve predicts its Track B retention better than the other model's curve (2 tests); EEGNet - TS+LR retention at 62..1000 ms (5 tests; C5 predicts negative). Holm over 7.",
+    "C0": "Conventional contextual benchmark (stride 500): random window-level vs trial-grouped 5-fold CV per participant; window-level, trial-aggregated and anchor-only BA; descriptive.",
+    "guards": "retention ratios only if every participant's denominator exceeds 0.5 points (else declared fallback).",
+    "inference": "54 participants; t95; two-sided MC sign-flip 1e6 (seed 10399); Holm within families.",
+    "forbidden_after_any_fit": "changing a lag, stride, arm, functional, baseline, threshold, family, scale or participant set."
+  },
+  "design": {
+    "lags_trackB_ms": [
+      0,
+      62,
+      125,
+      250,
+      500,
+      1000,
+      2000
+    ],
+    "strides_trackA_ms": [
+      1000,
+      500,
+      250
+    ],
+    "c0_stride_ms": 500,
+    "window_ms": 2000,
+    "offsets_ms": [
+      0,
+      62,
+      125,
+      250,
+      500,
+      750,
+      1000,
+      1250,
+      1500,
+      1750,
+      2000
+    ],
+    "variants": {
+      "0": [
+        "c4",
+        0
+      ],
+      "62": [
+        "c5",
+        0
+      ],
+      "125": [
+        "c5",
+        1
+      ],
+      "250": [
+        "c5",
+        2
+      ],
+      "500": [
+        "c4",
+        1
+      ],
+      "750": [
+        "b",
+        0
+      ],
+      "1000": [
+        "c4",
+        2
+      ],
+      "1250": [
+        "b",
+        1
+      ],
+      "1500": [
+        "c4",
+        3
+      ],
+      "1750": [
+        "b",
+        2
+      ],
+      "2000": [
+        "c4",
+        4
+      ]
+    },
+    "streams": {
+      "halves": 10301,
+      "placebo": 10302,
+      "seed": 10310,
+      "dropout": 10311,
+      "c0": [
+        10320,
+        10321,
+        10322,
+        10323
+      ]
+    },
+    "models": {
+      "EEGNet": "R4 EEGNet-8,2 via pmis_r6.eegnet_group (C2/C5 recipe, 100 epochs, final epoch, CRN groups)",
+      "TSLR": "exact-optimum TS+LR per arm (Karcher reference + damped Newton, C = 1), the C5 estimator"
+    }
+  },
+  "frozen_curves": {
+    "EEGNet": {
+      "0": 1.0,
+      "62": 0.7842661433917457,
+      "125": 0.6551993308622528,
+      "250": 0.38140176150961896,
+      "500": 0.29715673836836415,
+      "1000": 0.10392411396371094,
+      "2000": 0.037946029860345225
+    },
+    "TSLR": {
+      "0": 1.0,
+      "62": 0.9191668939328893,
+      "125": 0.8536454609200917,
+      "250": 0.7520189904515862,
+      "500": 0.6343548135157335,
+      "1000": 0.4315517387795375,
+      "2000": 0.0942916858648344
+    }
+  },
+  "curve_source_sha256": {
+    "C5": null,
+    "C4": null,
+    "C4b": null
+  },
+  "frozen_predictions": {
+    "EEGNet": {
+      "trackB": {
+        "62": 0.7842661433917457,
+        "125": 0.6551993308622528,
+        "250": 0.38140176150961896,
+        "500": 0.29715673836836415,
+        "1000": 0.10392411396371094,
+        "2000": 0.037946029860345225
+      },
+      "trackA": {
+        "additive": {
+          "1000": 0.12424367568534664,
+          "500": 0.3377316578859793,
+          "250": 0.5523271950775754
+        },
+        "nearest": {
+          "1000": 0.10392411396371094,
+          "500": 0.29715673836836415,
+          "250": 0.38140176150961896
+        },
+        "saturating": {
+          "1000": 0.13792663629237922,
+          "500": 0.43707727948279373,
+          "250": 0.7597799877104039
+        }
+      }
+    },
+    "TSLR": {
+      "trackB": {
+        "62": 0.9191668939328893,
+        "125": 0.8536454609200917,
+        "250": 0.7520189904515862,
+        "500": 0.6343548135157335,
+        "1000": 0.4315517387795375,
+        "2000": 0.0942916858648344
+      },
+      "trackA": {
+        "additive": {
+          "1000": 0.3446247604120522,
+          "500": 0.5873089155982713,
+          "250": 0.7638131316534682
+        },
+        "nearest": {
+          "1000": 0.4315517387795375,
+          "500": 0.6343548135157335,
+          "250": 0.7520189904515862
+        },
+        "saturating": {
+          "1000": 0.4851516836569487,
+          "500": 0.8612436792351078,
+          "250": 0.9913833510805535
+        }
+      }
+    }
+  },
+  "baselines": {
+    "trackB": {
+      "OVL": {
+        "62": 0.969,
+        "125": 0.9375,
+        "250": 0.875,
+        "500": 0.75,
+        "1000": 0.5,
+        "2000": 0.0
+      },
+      "BIN": {
+        "62": 1.0,
+        "125": 1.0,
+        "250": 1.0,
+        "500": 1.0,
+        "1000": 1.0,
+        "2000": 0.0
+      },
+      "EXACT": {
+        "62": 0.0,
+        "125": 0.0,
+        "250": 0.0,
+        "500": 0.0,
+        "1000": 0.0,
+        "2000": 0.0
+      }
+    },
+    "trackA": {
+      "OVL": {
+        "1000": 0.3333333333333333,
+        "500": 0.6,
+        "250": 0.7777777777777778
+      },
+      "CNT": {
+        "1000": 0.6666666666666666,
+        "500": 0.8,
+        "250": 0.8888888888888888
+      },
+      "BIN": {
+        "1000": 0.5,
+        "500": 0.75,
+        "250": 0.875
+      },
+      "EXACT": {
+        "1000": 0.0,
+        "500": 0.0,
+        "250": 0.0
+      }
+    }
+  },
+  "discriminating_a_priori": {
+    "EEGNet": {
+      "trackB": {
+        "OVL": true,
+        "BIN": true,
+        "EXACT": true
+      },
+      "trackA": {
+        "OVL": true,
+        "CNT": true,
+        "BIN": true,
+        "EXACT": true
+      }
+    },
+    "TSLR": {
+      "trackB": {
+        "OVL": true,
+        "BIN": true,
+        "EXACT": true
+      },
+      "trackA": {
+        "OVL": false,
+        "CNT": true,
+        "BIN": true,
+        "EXACT": true
+      }
+    }
+  },
+  "analysis_constants": {
+    "signflip_B": 1000000,
+    "signflip_seed": 10399,
+    "guard_points": 0.5,
+    "accuracy_margin": 0.1,
+    "alpha": 0.05,
+    "discrim_min": 0.05
+  },
+  "environment": {
+    "python": "3.11.15",
+    "numpy": "1.26.4",
+    "torch": "2.9.1+cu128"
+  },
+  "resources": {
+    "gpu_cap_gb": 6.0,
+    "gpu_min_free_gb": 6.0,
+    "tslr_workers": 4,
+    "nice": 10
+  },
+  "data_sha256": {
+    "data/r6_c4/lee2019_win_covs_8_30.npy": null,
+    "data/r6_c4/lee2019_win_eegnet_4_40_128hz.npy": null,
+    "data/r7_c5/lee2019_shift_covs_8_30.npy": null,
+    "data/r7_c5/lee2019_shift_eegnet_4_40_128hz.npy": null,
+    "data/r10_b/lee2019_r10b_covs_8_30.npy": null,
+    "data/r10_b/lee2019_r10b_eegnet_4_40_128hz.npy": null,
+    "data/r6_c3/lee2019_meta.npz": null
+  },
+  "plan": {
+    "folds": 216,
+    "participants": 54,
+    "commitment": null,
+    "geometry_first_fold_H1_anchors_or_all_anchors": {
+      "TrackB_B1_0": {
+        "rows": 350,
+        "distinct_source_trials": 350,
+        "distinct_heldout_run_trials": 50,
+        "heldout_run_windows": 50,
+        "class_counts": [
+          175,
+          175
+        ],
+        "anchors_exposed": 50,
+        "own_windows_per_exposed_anchor": 1.0,
+        "overlapping_own_windows_per_exposed_anchor": 1.0,
+        "min_lag_ms_exposed": [
+          0
+        ],
+        "shared_samples_nearest_exposed": [
+          2000
+        ],
+        "own_window_density": 0.14285714285714285
+      },
+      "TrackB_B1_62": {
+        "rows": 350,
+        "distinct_source_trials": 350,
+        "distinct_heldout_run_trials": 50,
+        "heldout_run_windows": 50,
+        "class_counts": [
+          175,
+          175
+        ],
+        "anchors_exposed": 50,
+        "own_windows_per_exposed_anchor": 1.0,
+        "overlapping_own_windows_per_exposed_anchor": 1.0,
+        "min_lag_ms_exposed": [
+          62
+        ],
+        "shared_samples_nearest_exposed": [
+          1938
+        ],
+        "own_window_density": 0.14285714285714285
+      },
+      "TrackB_B1_250": {
+        "rows": 350,
+        "distinct_source_trials": 350,
+        "distinct_heldout_run_trials": 50,
+        "heldout_run_windows": 50,
+        "class_counts": [
+          175,
+          175
+        ],
+        "anchors_exposed": 50,
+        "own_windows_per_exposed_anchor": 1.0,
+        "overlapping_own_windows_per_exposed_anchor": 1.0,
+        "min_lag_ms_exposed": [
+          250
+        ],
+        "shared_samples_nearest_exposed": [
+          1750
+        ],
+        "own_window_density": 0.14285714285714285
+      },
+      "TrackB_B1_1000": {
+        "rows": 350,
+        "distinct_source_trials": 350,
+        "distinct_heldout_run_trials": 50,
+        "heldout_run_windows": 50,
+        "class_counts": [
+          175,
+          175
+        ],
+        "anchors_exposed": 50,
+        "own_windows_per_exposed_anchor": 1.0,
+        "overlapping_own_windows_per_exposed_anchor": 1.0,
+        "min_lag_ms_exposed": [
+          1000
+        ],
+        "shared_samples_nearest_exposed": [
+          1000
+        ],
+        "own_window_density": 0.14285714285714285
+      },
+      "TrackB_B1_2000": {
+        "rows": 350,
+        "distinct_source_trials": 350,
+        "distinct_heldout_run_trials": 50,
+        "heldout_run_windows": 50,
+        "class_counts": [
+          175,
+          175
+        ],
+        "anchors_exposed": 50,
+        "own_windows_per_exposed_anchor": 1.0,
+        "overlapping_own_windows_per_exposed_anchor": 0.0,
+        "min_lag_ms_exposed": [
+          2000
+        ],
+        "shared_samples_nearest_exposed": [
+          0
+        ],
+        "own_window_density": 0.14285714285714285
+      },
+      "TrackB_Z": {
+        "rows": 350,
+        "distinct_source_trials": 300,
+        "distinct_heldout_run_trials": 0,
+        "heldout_run_windows": 0,
+        "class_counts": [
+          175,
+          175
+        ],
+        "anchors_exposed": 0,
+        "own_windows_per_exposed_anchor": 0.0,
+        "overlapping_own_windows_per_exposed_anchor": 0.0,
+        "min_lag_ms_exposed": [],
+        "shared_samples_nearest_exposed": [],
+        "own_window_density": 0.0
+      },
+      "TrackA_1000_G": {
+        "rows": 900,
+        "distinct_source_trials": 300,
+        "distinct_heldout_run_trials": 0,
+        "heldout_run_windows": 0,
+        "class_counts": [
+          450,
+          450
+        ],
+        "anchors_exposed": 0,
+        "own_windows_per_exposed_anchor": 0.0,
+        "overlapping_own_windows_per_exposed_anchor": 0.0,
+        "min_lag_ms_exposed": [],
+        "shared_samples_nearest_exposed": [],
+        "own_window_density": 0.0
+      },
+      "TrackA_1000_L": {
+        "rows": 1100,
+        "distinct_source_trials": 400,
+        "distinct_heldout_run_trials": 100,
+        "heldout_run_windows": 200,
+        "class_counts": [
+          550,
+          550
+        ],
+        "anchors_exposed": 100,
+        "own_windows_per_exposed_anchor": 2.0,
+        "overlapping_own_windows_per_exposed_anchor": 1.0,
+        "min_lag_ms_exposed": [
+          1000
+        ],
+        "shared_samples_nearest_exposed": [
+          1000
+        ],
+        "own_window_density": 0.18181818181818182
+      },
+      "TrackA_1000_A1": {
+        "rows": 1000,
+        "distinct_source_trials": 350,
+        "distinct_heldout_run_trials": 50,
+        "heldout_run_windows": 100,
+        "class_counts": [
+          500,
+          500
+        ],
+        "anchors_exposed": 50,
+        "own_windows_per_exposed_anchor": 2.0,
+        "overlapping_own_windows_per_exposed_anchor": 1.0,
+        "min_lag_ms_exposed": [
+          1000
+        ],
+        "shared_samples_nearest_exposed": [
+          1000
+        ],
+        "own_window_density": 0.1
+      },
+      "TrackA_1000_X1": {
+        "rows": 1050,
+        "distinct_source_trials": 350,
+        "distinct_heldout_run_trials": 50,
+        "heldout_run_windows": 150,
+        "class_counts": [
+          525,
+          525
+        ],
+        "anchors_exposed": 50,
+        "own_windows_per_exposed_anchor": 3.0,
+        "overlapping_own_windows_per_exposed_anchor": 2.0,
+        "min_lag_ms_exposed": [
+          0
+        ],
+        "shared_samples_nearest_exposed": [
+          2000
+        ],
+        "own_window_density": 0.14285714285714285
+      },
+      "TrackA_500_G": {
+        "rows": 1500,
+        "distinct_source_trials": 300,
+        "distinct_heldout_run_trials": 0,
+        "heldout_run_windows": 0,
+        "class_counts": [
+          750,
+          750
+        ],
+        "anchors_exposed": 0,
+        "own_windows_per_exposed_anchor": 0.0,
+        "overlapping_own_windows_per_exposed_anchor": 0.0,
+        "min_lag_ms_exposed": [],
+        "shared_samples_nearest_exposed": [],
+        "own_window_density": 0.0
+      },
+      "TrackA_500_L": {
+        "rows": 1900,
+        "distinct_source_trials": 400,
+        "distinct_heldout_run_trials": 100,
+        "heldout_run_windows": 400,
+        "class_counts": [
+          950,
+          950
+        ],
+        "anchors_exposed": 100,
+        "own_windows_per_exposed_anchor": 4.0,
+        "overlapping_own_windows_per_exposed_anchor": 3.0,
+        "min_lag_ms_exposed": [
+          500
+        ],
+        "shared_samples_nearest_exposed": [
+          1500
+        ],
+        "own_window_density": 0.21052631578947367
+      },
+      "TrackA_500_A1": {
+        "rows": 1700,
+        "distinct_source_trials": 350,
+        "distinct_heldout_run_trials": 50,
+        "heldout_run_windows": 200,
+        "class_counts": [
+          850,
+          850
+        ],
+        "anchors_exposed": 50,
+        "own_windows_per_exposed_anchor": 4.0,
+        "overlapping_own_windows_per_exposed_anchor": 3.0,
+        "min_lag_ms_exposed": [
+          500
+        ],
+        "shared_samples_nearest_exposed": [
+          1500
+        ],
+        "own_window_density": 0.11764705882352941
+      },
+      "TrackA_500_X1": {
+        "rows": 1750,
+        "distinct_source_trials": 350,
+        "distinct_heldout_run_trials": 50,
+        "heldout_run_windows": 250,
+        "class_counts": [
+          875,
+          875
+        ],
+        "anchors_exposed": 50,
+        "own_windows_per_exposed_anchor": 5.0,
+        "overlapping_own_windows_per_exposed_anchor": 4.0,
+        "min_lag_ms_exposed": [
+          0
+        ],
+        "shared_samples_nearest_exposed": [
+          2000
+        ],
+        "own_window_density": 0.14285714285714285
+      },
+      "TrackA_250_G": {
+        "rows": 2700,
+        "distinct_source_trials": 300,
+        "distinct_heldout_run_trials": 0,
+        "heldout_run_windows": 0,
+        "class_counts": [
+          1350,
+          1350
+        ],
+        "anchors_exposed": 0,
+        "own_windows_per_exposed_anchor": 0.0,
+        "overlapping_own_windows_per_exposed_anchor": 0.0,
+        "min_lag_ms_exposed": [],
+        "shared_samples_nearest_exposed": [],
+        "own_window_density": 0.0
+      },
+      "TrackA_250_L": {
+        "rows": 3500,
+        "distinct_source_trials": 400,
+        "distinct_heldout_run_trials": 100,
+        "heldout_run_windows": 800,
+        "class_counts": [
+          1750,
+          1750
+        ],
+        "anchors_exposed": 100,
+        "own_windows_per_exposed_anchor": 8.0,
+        "overlapping_own_windows_per_exposed_anchor": 7.0,
+        "min_lag_ms_exposed": [
+          250
+        ],
+        "shared_samples_nearest_exposed": [
+          1750
+        ],
+        "own_window_density": 0.22857142857142856
+      },
+      "TrackA_250_A1": {
+        "rows": 3100,
+        "distinct_source_trials": 350,
+        "distinct_heldout_run_trials": 50,
+        "heldout_run_windows": 400,
+        "class_counts": [
+          1550,
+          1550
+        ],
+        "anchors_exposed": 50,
+        "own_windows_per_exposed_anchor": 8.0,
+        "overlapping_own_windows_per_exposed_anchor": 7.0,
+        "min_lag_ms_exposed": [
+          250
+        ],
+        "shared_samples_nearest_exposed": [
+          1750
+        ],
+        "own_window_density": 0.12903225806451613
+      },
+      "TrackA_250_X1": {
+        "rows": 3150,
+        "distinct_source_trials": 350,
+        "distinct_heldout_run_trials": 50,
+        "heldout_run_windows": 450,
+        "class_counts": [
+          1575,
+          1575
+        ],
+        "anchors_exposed": 50,
+        "own_windows_per_exposed_anchor": 9.0,
+        "overlapping_own_windows_per_exposed_anchor": 8.0,
+        "min_lag_ms_exposed": [
+          0
+        ],
+        "shared_samples_nearest_exposed": [
+          2000
+        ],
+        "own_window_density": 0.14285714285714285
+      }
+    },
+    "eegnet_row_arms_per_fold": {
+      "trackB": 5600,
+      "trackA": 36100
+    },
+    "c0_fits_per_participant": 10,
+    "c0_train_rows": 1600
+  }
+}

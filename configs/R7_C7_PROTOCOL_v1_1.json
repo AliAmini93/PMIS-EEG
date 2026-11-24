@@ -1,0 +1,37 @@
+{
+  "status": "FROZEN",
+  "protocol_id": "R7-C7-BENCHMARK-INFLATION-TSLR-v1.1",
+  "frozen_utc": "2026-11-04T13:21:01.109250+00:00",
+  "criteria_declared_before_any_fit": {
+    "R1_retrospective_reproduction": "the frozen R4 TSLRw refits reproduce R4's stored hard-label predictions for 100 % of scored trials (L, P, C; S1 and S2; seeds 42-46) and R4's published BA contrasts to within 0.001 pp (rounded values)",
+    "L1_law_benchmark_level": "the parameter-free joint one-Newton-step prediction of LEAKED from the exact PLACEBO model reproduces the exact-optimum benchmark inflation on the probability scale: participant-mean ratio in [0.8, 1.25] and participant-level r >= 0.9; reported separately for S2 and S1 (declared expectation: S1, with ~167-row training sets, is the harder case)",
+    "descriptive": "probability-scale inflation (all / exposed / unexposed), fraction exposed, share of the gain carried by exposed trials, exposed-trial gain by multiplicity in LEAKED",
+    "status": "RETROSPECTIVE: R4's BA outcomes are known; no comparison here is independent confirmation"
+  },
+  "amendment": "v1.1 (implementation only, before any outcome): v1 completed all 1,460 fit tasks and then stopped BLOCKED in the analysis step (KeyError 'exposed_S1_42': the G2 metadata adapter loads only the S2 exposure masks); no aggregate was computed, printed or saved, and the fitted arrays were not saved. Changes: the S1 exposure masks are read directly from the frozen G2_manifest.npz (its SHA-256 is verified by the adapter's frozen check); the trial arrays are saved before the analysis. Plan, criteria and estimands unchanged.",
+  "supersedes": "Earlier protocol revision",
+  "environment": {
+    "python": "3.11.15",
+    "numpy": "1.26.4",
+    "scipy": "1.16.0",
+    "sklearn": "1.6.1"
+  },
+  "data_sha256": {
+    "G2_covs_8_30.npy": null,
+    "G3_tslr_predictions_PRIVATE.npz": null,
+    "G3_tslr_results.json": null,
+    "G2_instances.npz": null,
+    "G2_distinct.npz": null,
+    "G2_manifest.npz": null
+  },
+  "tasks": {
+    "S1": 1390,
+    "S2": 70
+  },
+  "resources": {
+    "max_workers": 4,
+    "nice": 10
+  },
+  "legacy_aggregate_splits_sha256": null,
+  "trial_array_reference_sha256": null
+}

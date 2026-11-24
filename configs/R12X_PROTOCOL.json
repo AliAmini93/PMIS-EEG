@@ -1,0 +1,201 @@
+{
+  "protocol_id": "R12X-DREYER2023-ABC-POLICY-REGRET-v1",
+  "status": "FROZEN",
+  "question": "Does selecting an EEG decoder architecture on a contaminated selection run B make the clean deployed model worse on a separately held-out, never-fitted clean run C than selecting on an uncontaminated B?",
+  "cohort": {
+    "dataset": "Dreyer et al. 2023 (Sci. Data, doi:10.1038/s41597-023-02445-z)",
+    "source": "producer GDF members of Zenodo 8089820 (G1R; CRC-32 + SHA-256 verified; own reader == MNE)",
+    "eligible_by_files": 86,
+    "signal_level_eligibility": "per run 40 cue events (769/770) 20/20; 20 analysis channels; 512 Hz; cue->781 = 640 samples; every [cue-3 s, cue+4 s) inside the file; no raw-window duplicate within/across runs or participants; own GDF reader == MNE (<=1e-12 relative; identical events). Failing participants are excluded before any fit and listed; no outcome-based exclusion",
+    "eligible_signal_level": 83,
+    "raw_sha256_table_sha256": null,
+    "eligible_set_sha256": null
+  },
+  "partitions": {
+    "A": "R1-R4 (160): A_train 128 / A_val 32, class-stratified, rng [12101, participant, class]",
+    "B": "R5 (40, 20/20)",
+    "C": "R6 (40, 20/20), fixed once, never B, never in any fit or selection",
+    "final_pool": "R1-R5 (200): train 160 / val 40, rng [12103, participant, class]",
+    "placebo_rows": "40 class-matched copies of A_train rows, rng [12102, participant, class]"
+  },
+  "arms": {
+    "S_P": "A_train + placebo copies (clean policy)",
+    "S_L": "A_train + one exact copy of every B trial (delta = 1.0, controlled stress test)",
+    "AA_L": "recomputation of S_L (bit-identical required)",
+    "F": "final pool train rows (clean refit; scored once on C)",
+    "AA_F": "recomputation of F"
+  },
+  "models": {
+    "roster": [
+      "TSLR",
+      "EEGNet",
+      "Shallow"
+    ],
+    "EEGNet": "pmis_r7.deep_group.EEGNetG (EEGNet-8,2)",
+    "Shallow": "pmis_r7.deep_group.GroupShallow",
+    "TSLR": "pmis_r10b.train.tslr_fit_predict (exact optimum)",
+    "recipe": "Adam 1e-3, batch 64, 100 epochs, no tuning; CRN group per (participant, stage, seed)",
+    "seeds": {
+      "K": 5,
+      "init_stream": 12301,
+      "dropout_stream": 12302
+    },
+    "readouts": {
+      "primary": "final epoch",
+      "secondary": "minimum validation cross-entropy epoch"
+    }
+  },
+  "windows": {
+    "primary": "cue [0, 1.25 s) pre-feedback",
+    "secondary": "fb [0, 4 s) cue + feedback",
+    "controls_descriptive": [
+      "precue [-1.25 s, 0)",
+      "eogcue",
+      "eogfb"
+    ],
+    "preprocessing": "trial-local causal 4th-order Butterworth, warm-up 3 s before window start; 8-30 Hz OAS covariance (EOG 1-30 Hz), uV; deep 4-40 Hz, 512->128 Hz polyphase, per-trial channel z-score",
+    "channels": [
+      "FC5",
+      "FC3",
+      "FC1",
+      "FC2",
+      "FC4",
+      "FC6",
+      "C5",
+      "C3",
+      "C1",
+      "Cz",
+      "C2",
+      "C4",
+      "C6",
+      "CP5",
+      "CP3",
+      "CP1",
+      "CPz",
+      "CP2",
+      "CP4",
+      "CP6"
+    ]
+  },
+  "estimands": {
+    "E1_primary": "leave-one-participant-out cross-fitted policy regret, cue window, final epoch",
+    "E2_secondary": "in-sample cohort policy regret (selection and evaluation share participants)",
+    "E3_descriptive": "2-block cross-fit; blocks = odd/even rank of participant number within each original dataset group",
+    "selection_rule": "argmax of cohort-mean seed-averaged B balanced accuracy; ties within 0.01 BA -> roster order",
+    "BA": "class-balanced accuracy (%) with correct iff correct-class probability > 0.5"
+  },
+  "statistics": {
+    "bootstrap": {
+      "draws": 20000,
+      "seed": 12010,
+      "rule": "participant resampling; selections re-run inside each resample; E1 leaves out all copies of the evaluated identity"
+    },
+    "decision": "E1 bootstrap with re-selection: FLIP_AND_REGRET iff any flip and the 5th percentile > 0 (Rule A, calibrated: max false regret 0.044 over H0 regimes)",
+    "classes": [
+      "NO_FLIP",
+      "FLIP_AND_REGRET",
+      "FLIP_NO_REGRET",
+      "REVERSE_REGRET"
+    ],
+    "sesoi_BA": 2.0,
+    "sesoi_claim": "only if the two-sided 95 % lower bound >= 2",
+    "secondary_holm_family": [
+      "E1 cue/es",
+      "E1 fb/final",
+      "E2 cue/final"
+    ],
+    "E2_signflip": {
+      "draws": 1000000,
+      "seed": 12399
+    },
+    "power_statement": "calibrated conditional power 0.50 at a 2-BA regret, 0.90 at 3 BA (synthetic); unconditional <= P(flip) x these",
+    "always_reported": [
+      "flip fraction",
+      "P(any flip)",
+      "mass at zero",
+      "P(regret < 0)",
+      "seed-level selections",
+      "all pairwise C gaps (descriptive)",
+      "B-side within-benchmark regret (descriptive)",
+      "controls",
+      "label lag-1"
+    ],
+    "calibration": "reports/R12X_G1R_STATISTICAL_CALIBRATION.md",
+    "holm_input": "boot_tail_fraction_le_0 (approximate p; calibrated at 5 % only)",
+    "loo_signflip": "descriptive only (not calibrated)"
+  },
+  "claims": {
+    "allowed": "contaminated-selection policy regret on an untouched clean run, in one independent MI cohort, under a controlled delta = 1.0 stress test, for cue-period MI-task decoding",
+    "forbidden": [
+      "own-copy causation",
+      "real-world prevalence",
+      "MI-only neural decoding",
+      "EEG decoding in general",
+      "0.76 unconditional power",
+      "independence from the experiment's own feedback loop"
+    ]
+  },
+  "resources": {
+    "policy": {
+      "gpu_coordination": "Scheduler-assigned CUDA device with a workspace lock and frozen resource thresholds",
+      "time_limits": "none",
+      "gpu_memory": "no per-process cap; wait until free GPU memory >= measured need",
+      "initial_need_free_mib": 6144,
+      "need_rule": "max(initial, 1.25 x largest observed peak reserved + 512 MiB)",
+      "host": "wait until MemAvailable >= 8 GiB and PSI full avg10 <= 5",
+      "oom": "3 identical attempts, then stop",
+      "nice": 10,
+      "deterministic": true
+    },
+    "removed_by_amendment_1": [
+      "6-GPU-h cumulative budget and SIGALRM hard stop",
+      "900-s unit cap",
+      "maximum wait 6 h",
+      "7.5-GiB per-process GPU fraction",
+      "timing-pilot <= 0.8 x budget gate"
+    ],
+    "persistence": "systemd-run --user transient service; JobLock prevents duplicates; atomic checkpoints"
+  },
+  "amendments": [
+    {
+      "id": "AMENDMENT-1",
+      "date": "2026-11-07",
+      "pre_outcome": true,
+      "document": "research/R12X_AMENDMENT_01_PRE_OUTCOME.md",
+      "diff": "research/R12X_AMENDMENT_01.diff",
+      "changes": [
+        "GPU scheduling is external to the scientific package. Fitting retains the recorded resource thresholds and has no unit timeout.",
+        "data source: producer GDF (G1R); EDF NO_GO_EDF_PROVENANCE unchanged",
+        "statistics: calibrated Rule A kept; LOO sign-flip descriptive; tail fraction renamed",
+        "pins: raw-file table, features, participants, design commitment, code digests"
+      ]
+    },
+    {
+      "id": "AMENDMENT-2",
+      "pre_outcome": true,
+      "document": "research/R12X_AMENDMENT_02_PRE_OUTCOME.md",
+      "diff": "research/R12X_AMENDMENT_02.diff"
+    }
+  ],
+  "deviations": [
+    "research/R12X_G1R_DEVIATION_01_READER.md",
+    "research/R12X_G1R_DEVIATION_02_G7.md"
+  ],
+  "feature_sha256": {
+    "cov_cue.npy": null,
+    "eeg_cue.npy": null,
+    "cov_fb.npy": null,
+    "eeg_fb.npy": null,
+    "cov_precue.npy": null,
+    "cov_eogcue.npy": null,
+    "cov_eogfb.npy": null,
+    "meta.npz": null
+  },
+  "participants_sha256": null,
+  "design_commitment": null,
+  "n_participants": 83,
+  "sensitivity_membership": {
+    "count": 70,
+    "sha256": null
+  }
+}

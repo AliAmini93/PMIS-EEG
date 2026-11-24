@@ -1,0 +1,33 @@
+{
+  "repository": "https://github.com/altaheri/TCFormer",
+  "commit": "701a361640708ef1cc07cf22660d47edc6d9bf3c",
+  "license": "MIT (Copyright (c) 2025 Hamdi Altaheri)",
+  "files": {
+    "models/tcformer.py": {
+      "upstream_sha256": "755cba76838ad325ffd35a75c2e555235f1541a4bb409634105f10f3537acd66",
+      "edits": [
+        "removed imports of ClassificationModule (Lightning) and measure_latency",
+        "utils.weight_initialization -> local module",
+        "removed the TCFormer(ClassificationModule) wrapper class and __main__ (training wrapper; TCFormerModule unchanged)"
+      ],
+      "vendored_sha256": "8b0c2bc72d9e4791be2c0857b177207fe12b5f01fb61db5d6cf8f58f7ba9a9af"
+    },
+    "models/modules.py": {
+      "upstream_sha256": "cb24a800c47cf3e417864b9928ba8da61017b1e928ae53706879c6af8a910c14",
+      "edits": [],
+      "vendored_sha256": "43a6372a5b7a189af4e1273398c74be148027809811f904eb24384b66ab05ee5"
+    },
+    "models/channel_group_attention.py": {
+      "upstream_sha256": "5623b68c9e1524faad00a8450a8f2fb909d3f39c7d4d20bef7ae769b8de8aabb",
+      "edits": [],
+      "vendored_sha256": "d8842aff7c62ce347df3d044056b4ab69e2ca7b9e13c399606beb413817ab18c"
+    },
+    "utils/weight_initialization.py": {
+      "upstream_sha256": "e92148c28b1ae39dc7c7a0d52704594545fb09cd9eaa6b1b819c4a3836ad01e3",
+      "edits": [],
+      "vendored_sha256": "f298a573476cd530d08b0f56c95445feaa0133975eed4f2530e76d8df863712f"
+    }
+  },
+  "config_used": "configs/tcformer.yaml model_kwargs (F1 32, kernels 20/32/64, d_group 16, D 2, pools 8/7, dropout_conv 0.4, q_heads 4, kv_heads 2, trans_depth 5, trans_dropout 0.4, tcn_depth 2, kernel_length_tcn 4, dropout_tcn 0.3); optimiser adam lr 9e-4 beta1 0.5 wd 1e-3, linear-warmup cosine schedule",
+  "config_sha256": "114588b9e6e2c1e14f99e2f7510ffb365dae704c1c0d07e06d26c866a4df4fac"
+}

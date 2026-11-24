@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pmis-eeg"
+version = "0.1.0"
+description = "Experimental code for the PMIS-EEG study"
+requires-python = ">=3.11,<3.12"
+dynamic = ["dependencies", "readme"]
+
+[project.scripts]
+pmis-eeg = "experiments.__main__:main"
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+readme = {file = ["README.md"], content-type = "text/markdown"}
+
+[tool.setuptools.packages.find]
+include = ["configs*", "data_preparation*", "evaluation*", "experiments*", "models*"]
+
+[tool.setuptools.package-data]
+configs = ["*.json"]
+models = ["vendor_*/LICENSE*", "vendor_*/*.py", "vendor_*/*.json", "vendor_*/upstream/LICENSE*", "vendor_*/upstream/*.py"]

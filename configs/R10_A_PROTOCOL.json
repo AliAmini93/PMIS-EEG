@@ -1,0 +1,106 @@
+{
+  "status": "FROZEN",
+  "protocol_id": "R10-A-RANKING-DISTORTION-HSSTROKE-v1",
+  "frozen_utc": "2026-11-06T09:22:20.153711+00:00",
+  "hypotheses_declared_before_any_fit": {
+    "status": "HS-Stroke discovery cohort. The TS+LR (R4/C7/R9-C2) and EEGNet (R8-B/R9-C) outcomes on these arms are KNOWN (G0: EEGNet ranks first in every arm; D_EEGNet,TSLR(L|P) = +7.14). ShallowConvNet has never been run on HS-Stroke; the training-seed replicates (SH2, EG2) have never been run. Prior knowledge used in choosing the roster: on Lee2019 (R7-C6, R8-D/E, trial level) ShallowConvNet's exact-copy effect exceeded EEGNet's, which exceeded TS+LR's.",
+    "directional_expectation_declared": "from the Lee2019 trial-level ordering: D_Shallow,TSLR(L|P) > 0 and D_Shallow,EEGNet(L|P) > 0. No expectation is declared for ShallowConvNet's CLEAN or PLACEBO rank. All tests are two-sided.",
+    "H1": "model-gap distortion D_AB = G_AB(L) - G_AB(P) for (EEGNet,TSLR), (Shallow,TSLR), (Shallow,EEGNet); participant level (14); exact two-sided sign-flip; Holm over the 3 pairs (the EEGNet,TSLR member is known from G0 and included for completeness)",
+    "H2": "ranking reversal between PLACEBO and LEAKED (primary) and CLEAN and LEAKED (secondary; Holm over the 3 D(L|C)): classified per pair as NO_REVERSAL / DESCRIPTIVE_REVERSAL / SUPPORTED_CROSSING / SUPPORTED_REVERSAL (pmis_r10.ranking.reversal_class); top-1 change supported only if the pair is SUPPORTED_REVERSAL; participant-cluster bootstrap (20,000) of P(first) and P(order differs); participant-level order changes descriptive",
+    "H3": "within-benchmark model-selection counterfactual: winner on LEAKED vs winner on PLACEBO (primary) and CLEAN; regret on the matched arm; relevant if regret >= 2 BA points (SESOI); bootstrap P(winner differs) and regret interval",
+    "H4": "attribution on exposed scored trials with R9-C's split halves: dE_AB (exposure with half support fixed) and dS_AB (half same-run support, no own copy) for the 3 pairs, Holm over 6; path shares and the step at which any exposed-trial order change occurs are descriptive; stitched OWN / OTHER arms are trial-conditional counterfactuals, never deployable models; identified at half exposure density only",
+    "SESOI": "2 BA points (the vendored R4 / Paper A Section 2.3 value, fixed before R10-A) for D, gaps and regret labels; it does not change any test",
+    "robustness": "training seed: H1-H3 repeated on replicate R2 (SH2 + EG2 + deterministic TS+LR); declared criteria in pmis_r10.analysis.robustness. Participants: n positive, leave-one-participant-out top-1 and sign of D. Fold seeds: per-seed orders and D",
+    "reporting_rule": "every outcome is reported whatever its sign or size; a null is a result; no model, arm, seed, split or threshold is added or changed after any outcome"
+  },
+  "design": {
+    "arms": "R4 frozen G2 manifest L, P, C and R9-C's split-half arms L1, L2 (same halves: R9-C split commitment re-verified)",
+    "models": {
+      "TSLR": "frozen R4 TSLRw, existing outputs (C7: L, P, C; R9-C2: L1, L2); deterministic",
+      "EEGNet": "EEGNet-8,2 (R4/R8-B), final epoch of 100; R1 = existing outputs (R8-B: L, P, C; R9-C: L1, L2); R2 = new replicate EG2",
+      "Shallow": "ShallowConvNet (R7-C6 GroupShallow, Schirrmeister 2017 at 128 Hz: 40 x 13 temporal, 40 x C spatial, BN, square, avg-pool 37/7, log, dropout 0.5, dense), Adam 1e-3, batch 64, 100 epochs, final epoch, same input as EEGNet (4-40 Hz, 128 Hz, 11 channels, per-trial channel z-score); R1 = SH1, R2 = SH2"
+    },
+    "CRN": "per fold: group (L, L1, L2, P, L') and group (C, C'), one pair seed and one group seed; L' and C' are A/A duplicates in every fold and must be bit-identical (stop rule)",
+    "read_out": "final epoch only (R4's arms leave no validation set; no early-stopping read-out is computed)",
+    "excluded": "TCFormer (projected about 30 GPU-h for 5 arms x 210 folds sequentially, against about 1 h for ShallowConvNet; decided from the synthetic pilot before any HS-Stroke outcome); validation-selected read-outs",
+    "unit": "participant (14); BA pooled over each participant's scored trials per fold seed, mean over seeds 42-44"
+  },
+  "analysis": {
+    "families": {
+      "H1": "Holm over 3",
+      "SEC": "Holm over 3",
+      "H4": "Holm over 6"
+    },
+    "alpha": 0.05,
+    "pairs": [
+      [
+        "EEGNet",
+        "TSLR"
+      ],
+      [
+        "Shallow",
+        "TSLR"
+      ],
+      [
+        "Shallow",
+        "EEGNet"
+      ]
+    ],
+    "bootstrap": {
+      "n_boot": 20000,
+      "seed": 10010
+    },
+    "primary_requires": "SH1 complete; R2 analysed only if SH2 and EG2 are both complete"
+  },
+  "environment": {
+    "python": "3.11.15",
+    "numpy": "1.26.4",
+    "torch": "2.9.1+cu128"
+  },
+  "data_sha256": {
+    "G2_eegnet_4_40_128hz.npy": null,
+    "R7_C7_trial_arrays_PRIVATE.npz": null,
+    "R9_C2_trial_arrays_PRIVATE.npz": null,
+    "R8_B_trial_arrays_PRIVATE.npz": null,
+    "R9_C_trial_arrays_PRIVATE.npz": null,
+    "G2_instances.npz": null,
+    "G2_distinct.npz": null,
+    "G2_manifest.npz": null
+  },
+  "plan": {
+    "folds": 210,
+    "parts": {
+      "SH1": {
+        "model": "Shallow",
+        "pair_salt": 8301,
+        "group_salt": 8302,
+        "role": "primary training seeds"
+      },
+      "SH2": {
+        "model": "Shallow",
+        "pair_salt": 10301,
+        "group_salt": 10302,
+        "role": "training-seed replicate"
+      },
+      "EG2": {
+        "model": "EEGNet",
+        "pair_salt": 10301,
+        "group_salt": 10302,
+        "role": "training-seed replicate"
+      }
+    },
+    "commitment": null,
+    "r9c_split_commitment": null,
+    "r9c_split_commitment_matches_frozen_R9C": true,
+    "rows_sum": {
+      "L": 694824,
+      "C": 280584,
+      "T": 70146
+    },
+    "rows_median": {
+      "L": 3180.0,
+      "C": 1280.0,
+      "T": 320.0
+    }
+  }
+}

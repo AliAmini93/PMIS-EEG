@@ -1,0 +1,81 @@
+{
+  "status": "FROZEN",
+  "protocol_id": "R6-C3a-PMIS-TSLR-LEE2019-v1",
+  "frozen_utc": "2026-11-04T00:35:52.459151+00:00",
+  "design": {
+    "status_of_evidence": "CONFIRMATORY for the generality of the PMIS estimand: Lee2019 (54 healthy participants, independent of HS-Stroke) has never been analysed by this project; no PMIS outcome on it exists",
+    "data": "GigaDB doi:10.5524/100542 (Lee et al. 2019, GigaScience giz002; GigaDB datasets CC0); 20 sensorimotor channels; trial-local causal 4th-order Butterworth 8-30 Hz; MI window [cue, cue+4 s); OAS covariance",
+    "injection": "no natural duplicates (build audit: 0 exact duplicate raw MI windows); a' is a bit-identical copy of held-out trial a added as one extra training row",
+    "split": "within participant, leave-one-run-out (4 runs x 100 trials); base C = the other 300 trials",
+    "pairs": "per (participant, held-out run, class): outcome-blind random 40 of 50 trials matched into 20 pairs, 10 untouched bystanders; 160 pairs per participant, 8,640 in total",
+    "placebo": "per pair: c != e random base trials of the same session (other run) and class; random sign",
+    "model": "vendored R4 TS+LR: multiplicity-weighted Karcher reference recomputed per arm, tangent space, L2 LR C = 1 solved to the exact optimum (damped Newton); the G3 sklearn-lbfgs estimator is also fitted for the A/B arms (S3)",
+    "aggregation": "G3 rule: pair value -> class-balanced participant value -> mean over 54 participants"
+  },
+  "hypotheses_declared_before_any_fit": {
+    "H1_primary": "d_TSLR (exact-optimum per-arm refit) differs from 0 on Lee2019; participant-level two-sided Monte Carlo sign-flip (1e6 draws, seed 7499) and t95 CI over 54 participants; expected direction > 0",
+    "H2_influence_law": "the parameter-free one-Newton-step prediction from the base model reproduces the exact effect: participant-mean ratio prediction/exact in [0.8, 1.25] AND pair-level Pearson r >= 0.9",
+    "secondary_family_holm": [
+      "S1_balanced_accuracy_contrast",
+      "S2_placebo_swap",
+      "S3_G3_lbfgs_estimator_identity_swap",
+      "S4_position_near_le6",
+      "S5_position_far_gt6"
+    ],
+    "declared_directions": {
+      "S2_placebo": "mean ~ 0 (symmetric control)",
+      "S5_minus_S4": "far > near, as in G3 (descriptive)"
+    },
+    "no_SESOI": "no equivalence region and no post-hoc relevance threshold"
+  },
+  "environment": {
+    "python": "3.11.15",
+    "numpy": "1.26.4",
+    "scipy": "1.16.0",
+    "sklearn": "1.6.1"
+  },
+  "feature_sha256": {
+    "lee2019_covs_8_30.npy": null,
+    "lee2019_meta.npz": null
+  },
+  "build_audit": {
+    "n_trials": 21600,
+    "n_participants": 54,
+    "exact_duplicate_raw_MI_windows": 0,
+    "channels": [
+      "FC5",
+      "FC3",
+      "FC1",
+      "FC2",
+      "FC4",
+      "FC6",
+      "C5",
+      "C3",
+      "C1",
+      "Cz",
+      "C2",
+      "C4",
+      "C6",
+      "CP5",
+      "CP3",
+      "CP1",
+      "CPz",
+      "CP2",
+      "CP4",
+      "CP6"
+    ]
+  },
+  "plan": {
+    "tasks": 216,
+    "pairs": 8640,
+    "commitment": null
+  },
+  "resources": {
+    "max_workers": 4,
+    "nice": 10
+  },
+  "raw_manifest": {
+    "count": 108,
+    "sha256": null
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "status": "FROZEN",
+  "protocol_id": "R6-C4-OVERLAP-EPISODE-TSLR-LEE2019-v1",
+  "frozen_utc": "2026-11-04T00:35:53.183260+00:00",
+  "design": {
+    "status_of_evidence": "Lee2019 participants as in C3 (independent of HS-Stroke); a different estimand on 2-s windows; C3 and C4 share participants and pairs and are not independent of each other",
+    "features": "window-local 2-s covariances (8-30 Hz causal Butterworth from each window's own first sample, OAS) at V0.0 [0,2), V0.5, V1.0, V1.5, V2.0 [2,4) s after the cue and P [-2.5,-0.5) s (fixation)",
+    "pairs_split": "identical to C3 (lee2019.build_tasks: leave-one-run-out, 8,640 same-run same-class pairs)",
+    "arms": "per pair and variant v: C + v(a) vs C + v(b), exact-optimum per-arm TS+LR refit; base and scored rows = V0.0",
+    "aggregation": "G3 rule; 54 participants; t95 CI; Monte Carlo sign-flip (1e6, seed 7499); Holm over S1-S4",
+    "interpretation_rule": "d(V2.0) > 0 means an advantage from the same MI episode without any shared sample; d(V0.0) - d(V2.0) > 0 means an additional advantage that requires shared samples"
+  },
+  "hypotheses_declared_before_any_fit": {
+    "H1_primary": "d(V0.0), the 2-s-window PMIS identity swap, differs from 0 (expected > 0); MC sign-flip over 54 participants",
+    "H2_mechanism": "the copy advantage decreases monotonically with sample overlap 100 > 75 > 50 > 25 > 0 % (reported as met / not met from participant means)",
+    "secondary_family_holm": [
+      "S1_sample_identity_increment_d100_minus_d0",
+      "S2_same_episode_no_shared_samples_d0",
+      "S3_episode_beyond_precue_d0_minus_dP",
+      "S4_precue_same_trial_dP"
+    ],
+    "key_quantity": "d(V2.0) / d(V0.0): the fraction of the exact-copy advantage that survives with NO shared samples (same MI episode, adjacent 2 s); d(P): same trial, pre-cue fixation (same moment, no MI content)",
+    "no_SESOI": "no equivalence region and no post-hoc relevance threshold"
+  },
+  "environment": {
+    "python": "3.11.15",
+    "numpy": "1.26.4",
+    "scipy": "1.16.0",
+    "sklearn": "1.6.1"
+  },
+  "feature_sha256": {
+    "lee2019_win_covs_8_30.npy": null
+  },
+  "windows_s": {
+    "V0.0": [
+      0.0,
+      2.0
+    ],
+    "V0.5": [
+      0.5,
+      2.5
+    ],
+    "V1.0": [
+      1.0,
+      3.0
+    ],
+    "V1.5": [
+      1.5,
+      3.5
+    ],
+    "V2.0": [
+      2.0,
+      4.0
+    ],
+    "P": [
+      -2.5,
+      -0.5
+    ]
+  },
+  "plan": {
+    "tasks": 216,
+    "pairs": 8640,
+    "commitment": null
+  },
+  "resources": {
+    "max_workers": 4,
+    "nice": 10
+  },
+  "raw_manifest": {
+    "count": 108,
+    "sha256": null
+  }
+}

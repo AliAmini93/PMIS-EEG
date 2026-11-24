@@ -1,0 +1,105 @@
+{
+  "status": "FROZEN",
+  "protocol_id": "R9-B-CBRAMOD-VALIDITY-LEE2019-v1",
+  "frozen_utc": "2026-11-05T15:33:02.641017+00:00",
+  "hypotheses_declared_before_any_fit": {
+    "status": "Lee2019 participants and pairs of C3/C6/R8-D/E. R8-E (pretrained CBraMod, 20-channel R8 input) outcomes are known; random-initialised CBraMod and the pretraining-format 19-channel input have never been run. Every comparison with R8-E is a new paired contrast on identical pairs.",
+    "question": "Did R8-E measure a pretrained foundation model, and does pretraining change the exact-copy effect? R8 compared CBraMod only with other architectures, so 'pretraining does not protect' was not identified.",
+    "B1_rule": "masked-patch NMSE (zero predictor = 1). V1: pretrained NMSE on clean pretraining-format input <= 0.90 and <= (best of 3 random initialisations) - 0.10. V2: pretrained NMSE on the R8 input <= 0.90 and <= its NMSE on the pretraining-format input (all trials) + 0.10. CERTIFIED_ENGAGED = V1 and V2; MONTAGE_DEGRADED = V1 and not V2 (=> B3 runs); NOT_ESTABLISHED = not V1 (the pretrained interpretation is downgraded; B3 does not run). 'Clean' = max |x| < 100 uV over the trial (CBraMod's pretraining bad-sample rule).",
+    "B2_family_holm": {
+      "B2_H1_random_final_d": "random-initialised CBraMod fine-tuned, final-epoch d != 0 (MC sign-flip)",
+      "B2_H2_pre_minus_random_final_d": "pretrained (R8-E2) minus random-initialised final d != 0",
+      "B2_H3_pre_minus_random_es_d": "same for the early-stopped (minimum validation loss) epoch",
+      "B2_H4_pre_minus_random_final_partner_prob": "pretrained minus random-initialised partner-arm correct-class probability (decodability) != 0, final epoch"
+    },
+    "probe_family_holm": {
+      "P_H1_pre_minus_random_probe_d": "pretrained-encoder probe d (R8-E1) minus random-encoder probe d != 0",
+      "P_H2_pre_minus_random_probe_partner_prob": "same for the partner-arm probability"
+    },
+    "B3_family_holm_conditional": {
+      "B3_H1_pre19_final_d": "pretrained CBraMod on the 19-channel pretraining-format input, final d != 0",
+      "B3_H2_pre19_minus_pre20_final_d": "19-channel minus R8 20-channel final d != 0",
+      "B3_H3_pre19_minus_pre20_probe_d": "19-channel minus R8 20-channel frozen-probe d != 0"
+    },
+    "descriptive": "random-init: early-stopped d, ES - final, placebo, BA contrast, partner probability, off-target change, early-stopping epochs, A/A, comparisons with EEGNet / ShallowConvNet / TS+LR on the same pairs; reproduction of R8-E2 / R8-E1 pretrained d on the same pairs; B1 NMSE for every input x model, unmasked NMSE, channel-permuted R8 input",
+    "interpretation_rules": [
+      "a non-significant pretrained-random difference is reported with its CI and is not equivalence",
+      "R8's 'pretraining does not protect' wording is replaced by the B2 result whatever it is",
+      "if B1 is NOT_ESTABLISHED, R8-E is described as 'CBraMod architecture initialised from the released checkpoint', not as evidence about pretrained representations"
+    ],
+    "no_SESOI": "no equivalence region; all results reported whatever their sign"
+  },
+  "design": {
+    "B1": "forward passes only on all 21,600 trials; inputs: R8 20-channel (official downstream preprocessing), the same with a fixed channel permutation (seed 9301), and the 19-channel pretraining-format build; Bernoulli(0.5) patch masks from torch CPU generator seed 9302 (one mask per input shape, shared by all models); models: TUEG checkpoint, random initialisations with seeds 0, 1, 2 (pretraining reconstruction head kept); eval mode",
+    "B2": "R8-D/E subset plan (216 pairs, arms A, B, C, E, A/A), identical recipe, seeds and read-outs to R8-E2; the only change is that the backbone keeps its random initialisation (torch.manual_seed(init_seed) before construction, as R8)",
+    "B2_probe": "frozen backbone constructed after torch.manual_seed(0) (R8-E1's construction seed) without loading the checkpoint; avg-pooled 200-d embedding; exact probe as R8-E1 on all 8,640 C3 pairs",
+    "B3": "identical to R8-E2 / R8-E1 except the 19-channel pretraining-format input (head width 19 x 4 x 200)"
+  },
+  "environment": {
+    "python": "3.11.15",
+    "numpy": "1.26.4",
+    "scipy": "1.16.0",
+    "torch": "2.9.1+cu128"
+  },
+  "data_sha256": {
+    "lee2019_meta.npz": null,
+    "lee2019_cbramod_200hz.npy": null,
+    "cbramod_checkpoint": "0792cb808c14e6b7a2bb2ce1dff379bc47bc54c49a779825bdfeb33bf8157178",
+    "lee2019_cbramod_tueglike19_200hz.npy": null,
+    "R8_DE_CBraMod_pair_records_PRIVATE.npz": null,
+    "R8_E1_pair_records_PRIVATE.npz": null,
+    "C3a": null,
+    "C3b": null,
+    "C6_EEGNet": null,
+    "C6_Shallow": null
+  },
+  "plan": {
+    "c6_commitment": null,
+    "subset_commitment": null,
+    "subset_pairs": 216,
+    "subset_arms_per_model": 1080,
+    "participants": 54,
+    "participants_with_both_classes": 54,
+    "fallback_pairs": 4,
+    "probe_pairs": 8640,
+    "probe_tasks": 216
+  },
+  "build_audit_19ch": {
+    "build": "R9-B TUEG-like 19-channel pretraining-format input",
+    "n_trials": 21600,
+    "shape": [
+      21600,
+      19,
+      800
+    ],
+    "channels_lee2019_names": [
+      "Fp1",
+      "Fp2",
+      "F3",
+      "F4",
+      "C3",
+      "C4",
+      "P3",
+      "P4",
+      "O1",
+      "O2",
+      "F7",
+      "F8",
+      "T7",
+      "T8",
+      "P7",
+      "P8",
+      "Fz",
+      "Cz",
+      "Pz"
+    ],
+    "trial_order_equals_C3_meta": true,
+    "raw_files_verified_against_C3_audit": 108,
+    "processed_abs_p99_over_100": 1.2481515419483173,
+    "fraction_trials_max_abs_below_100uV_pretraining_rule": 0.3756481481481482,
+    "sha256": {
+      "lee2019_cbramod_tueglike19_200hz.npy": null
+    },
+    "build_seconds": 2170.7541625499725
+  }
+}

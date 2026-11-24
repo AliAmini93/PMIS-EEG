@@ -1,0 +1,59 @@
+{
+  "status": "FROZEN",
+  "protocol_id": "R6-C3b-PMIS-EEGNET-LEE2019-v1",
+  "frozen_utc": "2026-11-04T06:05:08.614425+00:00",
+  "design": {
+    "status_of_evidence": "CONFIRMATORY replication of the C2 (HS-Stroke, discovery) EEGNet result on an independent cohort (Lee2019, 54 healthy participants); no EEGNet PMIS outcome on Lee2019 exists",
+    "model": "R4/Paper A EEGNet-8,2 exactly as in C2 (kern 64 at 128 Hz, 100 epochs, batch 64, Adam 1e-3, max-norm, no tuning); input 20 channels x 512 (4-40 Hz trial-local causal Butterworth, MI window, 128 Hz), per-trial channel z-score",
+    "pairs": "C3 pairs (lee2019.build_tasks); per task an outcome-blind random quarter, 10 of 40 (rng [7411, participant, run]); arms A, B, C, E (placebo) and one A/A per task; <= 48 arms per GPU group; CRN within pair as in C2",
+    "estimands": "C2 formulas; 54 participants; t95 CI; Monte Carlo sign-flip (1e6, seed 7499); Holm over S1-S3 (S3 = EEGNet minus the C3a exact-optimum TS+LR d on the same pairs)",
+    "fail_closed": "as C2 (non-finite output, A/A mismatch, missing group, commitment mismatch -> BLOCKED)"
+  },
+  "hypotheses_declared_before_any_fit": {
+    "basis": "C2 (HS-Stroke, discovery): d_EEGNet = +6.94 [6.05, 7.83], 14/14; d_EEGNet - d_TSLR = +5.76 [4.95, 6.58], 14/14",
+    "H1_primary": "d_EEGNet on Lee2019 differs from 0; declared direction > 0; MC sign-flip over 54 participants",
+    "H2_S3": "d_EEGNet > d_TSLR (C3a exact-optimum TS+LR on the same pairs); tested as S3 within the Holm family",
+    "H3_descriptive_declared": "participant-level correlation of d_EEGNet with partner-arm BA is negative (post-hoc pattern of C3a TS+LR r = -0.96 and C2 EEGNet r = -0.60); reported with Pearson / Spearman, not Holm-adjusted",
+    "secondary_family_holm": [
+      "S1_balanced_accuracy_contrast",
+      "S2_placebo_swap",
+      "S3_EEGNet_minus_TSLR_same_pairs"
+    ],
+    "no_SESOI": "no equivalence region and no post-hoc relevance threshold"
+  },
+  "environment": {
+    "python": "3.11.15",
+    "numpy": "1.26.4",
+    "scipy": "1.16.0",
+    "sklearn": "1.6.1",
+    "torch": "2.9.1+cu128",
+    "cuda": "12.8",
+    "gpu": "NVIDIA GeForce RTX 5090"
+  },
+  "data_sha256": {
+    "lee2019_eegnet_4_40_128hz.npy": null,
+    "lee2019_meta.npz": null,
+    "R6_C3a_pair_records_PRIVATE.npz": null
+  },
+  "plan": {
+    "commitment": null,
+    "n_pairs": 2160,
+    "n_arms": 8856,
+    "n_groups": 216,
+    "arms_by_type": {
+      "A": 2160,
+      "B": 2160,
+      "C": 2160,
+      "E": 2160,
+      "AA": 216
+    },
+    "max_group_size": 41
+  },
+  "resources": {
+    "gpu_cap_gb": 7.5,
+    "gpu_min_free_gb_before_each_group": 10.0,
+    "host_min_available_mb": 4096,
+    "max_wait_s": 21600,
+    "nice": 10
+  }
+}

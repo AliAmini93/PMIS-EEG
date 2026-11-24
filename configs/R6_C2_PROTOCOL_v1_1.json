@@ -1,0 +1,68 @@
+{
+  "status": "FROZEN",
+  "protocol_id": "R6-C2-PMIS-EEGNET-v1.1",
+  "frozen_utc": "2026-11-03T22:35:25.894879+00:00",
+  "design": {
+    "status_of_evidence": "the HS-Stroke data and pairs were examined in G3 with TS+LR; EEGNet outcomes on them have never been computed (R4's EEGNet run was stopped with no outcome). New-model evidence on the same participants: not an independent cohort.",
+    "model": "R4/Paper A EEGNet-8,2 exactly (vendored make_eegnet: kern 64 at 128 Hz, F1 8, D 2, F2 16, dropout 0.25, max-norm 1/0.25, Adam 1e-3, batch 64, 100 epochs, no early stopping/validation); R4 input (4-40 Hz causal Butterworth, MI window 9-13 s, 128 Hz x 512, per-trial channel z-score); no tuning",
+    "implementation": "grouped exact equivalent of separate fits (tests/test_r6_c2_synthetic.py); FFT/einsum fast path equals the convolution path; torch deterministic algorithms",
+    "pairs": "per (participant, fold) task an outcome-blind simple random ceil(n/3) of the G3 seed-42 pairs (rng [7301, 42, participant, fold])",
+    "arms": "A = C + a', B = C + b'; G = C + g' (G3 C1 neighbour) where defined; C/E = C + c'/e' (G3 C2 placebo) where defined; one A/A duplicate per task",
+    "common_random_numbers": "all arms of a pair share init (torch.manual_seed(pair seed) on make_eegnet), row order and dropout masks; pair seed = sha256(7302, 42, participant, fold, k)",
+    "estimands": "G3 formulas and aggregation (correct-class softmax probability; class-balanced within participant; 14 participants equal weight; t95 CI; exact sign-flip; Holm over S1-S5)",
+    "fail_closed": "non-finite output, A/A mismatch > 0, missing group or commitment mismatch -> BLOCKED, no analysis of partial results"
+  },
+  "hypotheses_declared_before_any_fit": {
+    "H1_primary": "d_EEGNet (canonical base, sampled pairs) differs from 0; two-sided exact sign-flip over 14 participants",
+    "H2_direction_declared_before_fit": "d_EEGNet > d_TSLR on the same pairs (S5 > 0): a deep decoder trained to low loss is expected to carry more self-influence than an L2 linear model",
+    "secondary_family_holm": [
+      "S1_balanced_accuracy_contrast",
+      "S2_C1_same_run_minus_different_run_neighbour",
+      "S3_C1_identity_minus_neighbour_contrast",
+      "S4_C2_placebo_nontest_swap",
+      "S5_EEGNet_minus_TSLR_same_pairs"
+    ],
+    "no_SESOI": "no equivalence region and no post-hoc relevance threshold"
+  },
+  "amendment": "v1.1 (implementation only, before any outcome): the v1 attempt stopped BLOCKED with CUDA out-of-memory at the evaluation step of group 1 (owner GPU processes grew to leave 1.3 GB free; evaluation used chunks of 256 trials x 96 models). No group finished, nothing was saved or analysed. Changes: evaluation chunks 32; GPU cap 7.5 GB; on out-of-memory the group is discarded, memory freed, resources awaited and the identical deterministic group recomputed (<= 6 times). Scientific design and plan commitment unchanged.",
+  "supersedes": "Earlier protocol revision",
+  "environment": {
+    "python": "3.11.15",
+    "numpy": "1.26.4",
+    "scipy": "1.16.0",
+    "sklearn": "1.6.1",
+    "torch": "2.9.1+cu128",
+    "cuda": "12.8",
+    "gpu": "NVIDIA GeForce RTX 5090"
+  },
+  "data_sha256": {
+    "G2_eegnet_4_40_128hz.npy": null,
+    "G3_pair_scores_PRIVATE.npz": null,
+    "G2_instances.npz": null,
+    "G2_distinct.npz": null,
+    "G2_manifest.npz": null
+  },
+  "g3_plan_commitment_reproduced": null,
+  "plan": {
+    "commitment": null,
+    "n_pairs": 2714,
+    "n_arms": 9560,
+    "n_groups": 141,
+    "arms_by_type": {
+      "A": 2714,
+      "B": 2714,
+      "C": 1656,
+      "E": 1656,
+      "AA": 70,
+      "G": 750
+    },
+    "max_group_size": 96
+  },
+  "resources": {
+    "gpu_cap_gb": 7.5,
+    "gpu_min_free_gb_before_each_group": 10.0,
+    "host_min_available_mb": 4096,
+    "max_wait_s": 21600,
+    "nice": 10
+  }
+}

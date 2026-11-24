@@ -1,0 +1,29 @@
+# Porting and provenance
+
+The baseline is the R32 scientific snapshot. The release integrity manifest binds the published implementation and experiment configurations. Prespecified seeds, fit counts and design parameters remain in the configurations. Output locations and physical device selection are runtime inputs.
+
+The HS-Stroke builder reconstructs features and acquisition origins from Figshare versions 1 and 3. Historical full-trial digests preserve the v1-to-v3 correspondence and fold row order. Scored-block identities also have an explicit uniqueness check across the distinct trials. The Shin2022 builder uses the first appearance of each byte-identical recording when traversing the sorted live archive members. It validates the session by acquisition date and regenerates the feedback-window projection used in the study. The frozen cache inherited from the earlier analysis used causal recording filters before taking windows. Its historical projection preserves that preprocessing. The Shin2022 final-epoch trainer uses its scored rows for the final read-out.
+
+Lee2019 validates a commitment to the manifest of original MI files. The four-second features include the recorded three-second causal warm-up. The two-second shifts and sliding windows use the recorded window-local filter state. The 500 ms C0 stride has 75% overlap for two-second windows. The frozen single-copy curve knots and dose-forecast inputs are stored as cohort-level scientific configuration.
+
+Dreyer2023 uses the corrected producer GDF reader, an independent MNE agreement check, outcome-blind geometry and duplicate screens, and the amended scaling check. Cohort membership is recomputed locally. Fits and validation exclude the evaluation run. The primary cross-fitted analysis and the pre-outcome calibration retain their recorded logic. The secondary in-sample bootstrap selects on resampled participant means at the declared 0.01-BA tolerance. The tie-sensitivity command also reproduces the historical sum-scale computation for the additive erratum.
+
+The historical HS-Stroke benchmark is included because it supplies two reported retrospective contrasts. The earlier Shin2022 benchmark, later exploratory campaigns, unused architectures, rejected data conversions, figure and manuscript generation, acquisition downloads and workstation job-management code are outside this package's scope.
+
+## Vendored source
+
+The original MIT notices accompany CBraMod at `b9e961003214326972c567eff390e75b0287e32a`, TCFormer at `701a361640708ef1cc07cf22660d47edc6d9bf3c`, LaBraM at `c431221e6cfd23dbfa9950e0180682fb322b0548` and ST-EEGFormer at `542ee17918c3c2c36ba1d4ea02bedff5eb149370`. The CBraMod port uses a local import. Its criss-cross transformer adapts PyTorch transformer code and includes the PyTorch BSD notice. TCFormer uses the official model module with local imports and the study training loop. Its `DropPath` adapts timm under Apache 2.0. Its rotary utilities reference the GPT-NeoX and LLaMA implementations of rotary position embeddings. The LaBraM source headers credit BEiT v2, timm, DeiT and DINO. Their MIT and Apache 2.0 notices accompany those files. [CBraMod](https://github.com/wjq-learning/CBraMod), [PyTorch](https://github.com/pytorch/pytorch/blob/v2.5.1/LICENSE), [TCFormer](https://github.com/altaheri/TCFormer), [timm](https://github.com/huggingface/pytorch-image-models/blob/a6e8598aaf90261402f3e9e9a3f12eac81356e9d/LICENSE), [LaBraM](https://github.com/935963004/LaBraM)
+
+The ST-EEGFormer source headers credit Liuyin Yang and Meta MAE. The ST-EEGFormer supervised and masked EEG models adapt Meta MAE's image models for EEG. The layer-decay utility retains Meta Platforms, Inc. and affiliates' original copyright notice and source. The release renames these three files for local packaging and keeps their contents unchanged from the pinned ST-EEGFormer revision. Meta MAE portions fall under CC BY-NC 4.0, which permits sharing and adaptation for noncommercial purposes with attribution and notice. The full MAE licence accompanies the source. The upstream ST-EEGFormer MIT notice and the inherited timm and DeiT notices accompany the relevant portions. [ST-EEGFormer source](https://github.com/LiuyinYang1101/STEEGFormer), [Meta MAE source and licence](https://github.com/facebookresearch/mae), [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/legalcode.en)
+
+The HS-Stroke manifest, pair reconstruction and historical benchmark adapt code from earlier project work. The Shin2022 BCI2000 reader adapts the earlier recording audit.
+
+## Historical verification
+
+Use a fresh work directory and the steps in the workflow guide to regenerate prerequisites. Source-archive and checkpoint checksums, input and fit-count checks, split isolation, and checks of the computed design when resuming or combining local fits still apply where implemented. `null` digest fields in the configurations mark comparisons to historical artifacts that require a separate receipt. With no receipt, the workflows run on local builds and fits without claiming byte-level parity with the historical artifacts. [Workflow guide](experiments/WORKFLOWS.md)
+
+To check historical parity with authorized references, supply `reference_receipts.json` in the work directory. Its optional maps are:
+
+- `protocols` maps a distributed config filename to SHA-256 values keyed by the slash-separated JSON paths of its `null` digest fields. For example, `G3_PROTOCOL_FROZEN.json` can supply `commitments/plan_commitment_sha256`.
+- `hs_stroke` maps local artifact basenames, such as `G2_manifest.npz`, to SHA-256 values.
+- `array_receipts` maps a historical file SHA-256 to the SHA-256 of its ordered NPZ fields as computed by `experiments.runtime.npz_content_sha256`. This lets historical comparisons accept a different ZIP serialization when field names, shapes, dtypes and bytes agree.

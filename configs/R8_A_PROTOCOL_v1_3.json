@@ -1,0 +1,72 @@
+{
+  "status": "FROZEN",
+  "protocol_id": "R8-A-PMIS-SHIN2022-NATURAL-v1.3",
+  "frozen_utc": "2026-11-05T08:42:55.429245+00:00",
+  "hypotheses_declared_before_any_fit": {
+    "status": "Shin2022 participants are independent of HS-Stroke and Lee2019; the release was analysed by Paper A at benchmark level (LEAKED/PLACEBO/CLEAN); no trial-level identity-swap outcome on it exists. Natural duplicates.",
+    "H1": "d_TSLR > 0 (exact-optimum per-arm refit)",
+    "H2": "d_EEGNet > 0 (EEGNet-8,2, kern 125 at 250 Hz, mean over 20 CRN seeds)",
+    "H3": "d_EEGNet > d_TSLR on the same pairs (direction observed on HS-Stroke and confirmed on Lee2019)",
+    "family_holm": [
+      "H1_TSLR_d",
+      "H2_EEGNet_d",
+      "H3_EEGNet_minus_TSLR"
+    ],
+    "tests": "exact two-sided sign-flip over 2^9 patterns (floor 0.0039)",
+    "H4_law": "one-Newton-step prediction from the base model: ratio in [0.8, 1.25] and pair-level r >= 0.9",
+    "descriptive": "placebo per model, BA contrast, context probability, near/far trial-position strata, A/A determinism",
+    "no_SESOI": "no equivalence region and no post-hoc relevance threshold"
+  },
+  "amendment": "v1.1: validate only the rows the tasks use (v1 stopped at the input check: 184 ineligible cache rows are NaN). v1.2 (implementation only, before any outcome): the v1.1 EEGNet step stopped BLOCKED with CUDA out-of-memory on the second participant (5 GB cap; owner job holding 19 GB); nothing was saved or analysed. v1.2: 8 GB cap with expandable segments, wait for >= 10 GB free GPU before each participant, identical deterministic recompute on out-of-memory, per-participant checkpoints. TS+LR outputs of v1.1 are recomputed identically (deterministic). Design, hypotheses and plan commitment unchanged.",
+  "amendment_v1_3": "The recorded memory recovery preserves the scheduled EEGNet seeds and predictions. Restart the failed work unit with the same inputs and seeds.",
+  "supersedes": "Earlier protocol revision",
+  "design": {
+    "test": "duplicated recording's eligible trials (canonical)",
+    "base": "eligible trials of all other distinct recordings of the participant",
+    "arms": "C + alias copy of each test trial; C + extra copy of class-matched random base trials (placebo, rng [8101, participant])",
+    "pairs": "all same-class pairs of test trials",
+    "window": "FB_EARLY (first 0.96 s of feedback); TS+LR on the 8-30 Hz OAS covariance, EEGNet on 4-40 Hz 16 x 240 at 250 Hz with per-trial channel z-score",
+    "eegnet_seeds": [
+      8201,
+      8202,
+      8203,
+      8204,
+      8205,
+      8206,
+      8207,
+      8208,
+      8209,
+      8210,
+      8211,
+      8212,
+      8213,
+      8214,
+      8215,
+      8216,
+      8217,
+      8218,
+      8219,
+      8220
+    ]
+  },
+  "environment": {
+    "python": "3.11.15",
+    "numpy": "1.26.4",
+    "scipy": "1.16.0",
+    "sklearn": "1.6.1",
+    "torch": "2.9.1+cu128"
+  },
+  "data_sha256": {
+    "windows": null,
+    "registry": null
+  },
+  "plan": {
+    "participants": 9,
+    "pairs": 1052,
+    "commitment": null
+  },
+  "portable_input_sha256": {
+    "windows": null,
+    "registry": null
+  }
+}

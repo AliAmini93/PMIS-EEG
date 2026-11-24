@@ -1,0 +1,58 @@
+{
+  "status": "FROZEN",
+  "protocol_id": "R7-C6-DEEP-ROBUSTNESS-LEE2019-v1",
+  "frozen_utc": "2026-11-04T13:34:43.256952+00:00",
+  "design": {
+    "status_of_evidence": "Lee2019 participants and pairs as in C3 (independent of HS-Stroke, not of C3/C4); ShallowConvNet and early-stopped EEGNet have never been run on these data",
+    "models": "EEGNet-8,2 exactly as C2/C3b; ShallowConvNet (Schirrmeister 2017) at 128 Hz: temporal conv 40 x 13, spatial conv 40 x 40 x 20, BN, square, avg pool 37 / 7, log, dropout 0.5, dense; both: Adam 1e-3, batch 64, 100 epochs, no tuning; grouped exact equivalents (tests/test_r7_deep_group.py)",
+    "early_stopping": "by selection: the epoch with minimum validation cross-entropy on 60 held-out base trials (30 per class, identical in every arm of a task); the final-epoch read-out comes from the same run",
+    "pairs": "C3 pairs; per task an outcome-blind 5 of 40 (rng [7601, participant, run]); arms A, B, C, E + one A/A per task",
+    "inference": "54 participants; t95 CI; Monte Carlo sign-flip (1e6, seed 7499); Holm over the 6-test family"
+  },
+  "hypotheses_declared_before_any_fit": {
+    "question": "is the deep-decoder exact-copy effect (C2/C3b, EEGNet, fixed 100-epoch schedule) an artefact of the schedule or of one architecture?",
+    "H1": "for EEGNet and ShallowConvNet, at both read-outs (final epoch; minimum-validation-loss epoch), d > 0",
+    "H2_declared_direction": "early stopping reduces the effect: d_es - d_final < 0 for each model (two-sided test)",
+    "family_holm": [
+      "EEGNet_final_d",
+      "EEGNet_es_d",
+      "Shallow_final_d",
+      "Shallow_es_d",
+      "EEGNet_es_minus_final",
+      "Shallow_es_minus_final"
+    ],
+    "descriptive": "placebo per model and read-out, BA contrast, context accuracy, off-target change, early-stopping epoch distribution, ShallowConvNet minus EEGNet, C3a TS+LR on the same pairs (different base: 300 vs 240 rows)",
+    "no_SESOI": "no equivalence region and no post-hoc relevance threshold"
+  },
+  "environment": {
+    "python": "3.11.15",
+    "numpy": "1.26.4",
+    "scipy": "1.16.0",
+    "sklearn": "1.6.1",
+    "torch": "2.9.1+cu128",
+    "cuda": "12.8",
+    "gpu": "NVIDIA GeForce RTX 5090"
+  },
+  "data_sha256": {
+    "lee2019_eegnet_4_40_128hz.npy": null,
+    "lee2019_meta.npz": null,
+    "R6_C3a_pair_records_PRIVATE.npz": null
+  },
+  "plan": {
+    "commitment": null,
+    "n_pairs": 1080,
+    "n_arms_per_model": 4536,
+    "n_groups_per_model": 216,
+    "models": [
+      "EEGNet",
+      "Shallow"
+    ]
+  },
+  "resources": {
+    "gpu_cap_gb": 7.5,
+    "gpu_min_free_gb_before_each_group": 10.0,
+    "host_min_available_mb": 4096,
+    "max_wait_s": 21600,
+    "nice": 10
+  }
+}

@@ -1,0 +1,117 @@
+{
+  "status": "FROZEN",
+  "protocol_id": "R8-DE-TRANSFORMER-FOUNDATION-LEE2019-v1.1",
+  "frozen_utc": "2026-11-05T10:07:43.077896+00:00",
+  "hypotheses_declared_before_any_fit": {
+    "status": "Lee2019 participants and pairs of C3/C6 (independent of HS-Stroke; not of C3/C6). TCFormer and CBraMod have never been run on these data. EEGNet-8,2 / ShallowConvNet (C6) and TS+LR (C3a) outcomes on the same pairs are known; every cross-model comparison is descriptive.",
+    "R8-D_family_holm": {
+      "TCFormer_final_d": "d > 0 (final epoch)",
+      "TCFormer_es_d": "d > 0 (minimum-validation-loss epoch)",
+      "TCFormer_es_minus_final": "early stopping changes d (two-sided; C6 found a reduction)"
+    },
+    "R8-E2_family_holm": {
+      "CBraMod_final_d": "fine-tuned CBraMod d > 0 (final epoch, 50)",
+      "CBraMod_es_d": "d > 0 (early-stopped)",
+      "CBraMod_es_minus_final": "early stopping changes d (two-sided)"
+    },
+    "R8-E1_single_test": {
+      "CBraMod_probe_d": "frozen-encoder linear-probe d > 0 (full C3 design, 8,640 pairs)"
+    },
+    "descriptive": "placebo, BA contrast, partner-arm probability, off-target change, early-stopping epochs, A/A; paired participant-level differences vs EEGNet / Shallow (C6) and TS+LR (C3a) on identical pairs; probe vs TS+LR (all C3 pairs) and vs EEGNet (C3b pairs)",
+    "no_SESOI": "no equivalence region and no post-hoc relevance threshold; all results reported whatever their sign"
+  },
+  "design": {
+    "pairs_deep": "R8 subset of the R7-C6 groups: one pair per participant x held-out run (216 pairs, 54 participants), the first C6 pair of class 1 + (run mod 2); arms A, B, C, E + A/A (1,080 arms per model); C6 train (240) / validation (60) sets, pair seeds and group seeds",
+    "pairs_probe": "full C3 design: 8,640 pairs, base 300 + 1 row, placebo arms C / E per pair",
+    "TCFormer": "official configs/tcformer.yaml model_kwargs; Adam 9e-4, betas (0.5, 0.999), wd 1e-3, linear-warmup (2) cosine per epoch, 100 epochs, batch 64; C6 inputs (4-40 Hz, 128 Hz, 4 s, per-trial channel z-score); no interaug",
+    "CBraMod": "TUEG-pretrained checkpoint (HF weighting666/CBraMod @500543c, SHA-256 0792cb80...); official BCIC-IV-2a preprocessing (CAR, 0.3-40 Hz causal Butterworth-5, 200 Hz, /100); E2: official fine-tuning recipe (all_patch_reps head, AdamW 1e-4 / 5e-4, wd 5e-2, cosine per step, clip 1, label smoothing 0.1, 50 epochs, batch 64); E1: frozen backbone, avg-pooled 200-d embedding, per-arm standardisation + exact L2 logistic regression (C = 1)",
+    "read_outs": "final epoch and minimum-validation-cross-entropy epoch (same run), as C6",
+    "CRN": "within pair: initialisation, row-position permutation; within group: dropout / drop-path stream",
+    "contamination": "CBraMod pretraining corpus = TUEG only (Temple University Hospital clinical EEG); Lee2019 (Korea University) is not in it. REVE rejected: its pretraining list includes Lee2019MI (and gated weights)"
+  },
+  "environment": {
+    "python": "3.11.15",
+    "numpy": "1.26.4",
+    "scipy": "1.16.0",
+    "torch": "2.9.1+cu128",
+    "cuda": "12.8",
+    "gpu": "NVIDIA GeForce RTX 5090"
+  },
+  "data_sha256": {
+    "lee2019_eegnet_4_40_128hz.npy": null,
+    "lee2019_meta.npz": null,
+    "lee2019_cbramod_200hz.npy": null,
+    "cbramod_checkpoint": "0792cb808c14e6b7a2bb2ce1dff379bc47bc54c49a779825bdfeb33bf8157178",
+    "C3a": null,
+    "C3b": null,
+    "C6_EEGNet": null,
+    "C6_Shallow": null
+  },
+  "plan": {
+    "c6_commitment": null,
+    "subset_commitment": null,
+    "subset_pairs": 216,
+    "subset_arms_per_model": 1080,
+    "participants": 54,
+    "participants_with_both_classes": 54,
+    "fallback_pairs": 4,
+    "probe_pairs": 8640,
+    "probe_tasks": 216
+  },
+  "amendment_v1_1": "implementation only, before any probe outcome: the v1 probe stopped BLOCKED ('probe Newton did not converge'); diagnostic on 1,440 fits (gradients only): 1.7 % stagnate at a floating-point floor (max|grad| 5e-10..8e-8) under backtracking, a tol-1e-7 refit converges in <= 9 steps and agrees to 9e-9 in probability. v1.1 accepts a stagnated fit only if max|grad| <= 1e-6 and counts them. Training code (seq_train, models_de, vendored models, de_plan) and plans unchanged; the TCFormer / CBraMod shards launched under v1 continue (their checkpoints carry the unchanged subset commitment).",
+  "supersedes": "Earlier protocol revision",
+  "vendored_upstream": {
+    "tcformer": {
+      "repository": "https://github.com/altaheri/TCFormer",
+      "commit": "701a361640708ef1cc07cf22660d47edc6d9bf3c",
+      "license": "MIT (Copyright (c) 2025 Hamdi Altaheri)",
+      "files": {
+        "models/tcformer.py": {
+          "upstream_sha256": "755cba76838ad325ffd35a75c2e555235f1541a4bb409634105f10f3537acd66",
+          "edits": [
+            "removed imports of ClassificationModule (Lightning) and measure_latency",
+            "utils.weight_initialization -> local module",
+            "removed the TCFormer(ClassificationModule) wrapper class and __main__ (training wrapper; TCFormerModule unchanged)"
+          ],
+          "vendored_sha256": "8b0c2bc72d9e4791be2c0857b177207fe12b5f01fb61db5d6cf8f58f7ba9a9af"
+        },
+        "models/modules.py": {
+          "upstream_sha256": "cb24a800c47cf3e417864b9928ba8da61017b1e928ae53706879c6af8a910c14",
+          "edits": [],
+          "vendored_sha256": "43a6372a5b7a189af4e1273398c74be148027809811f904eb24384b66ab05ee5"
+        },
+        "models/channel_group_attention.py": {
+          "upstream_sha256": "5623b68c9e1524faad00a8450a8f2fb909d3f39c7d4d20bef7ae769b8de8aabb",
+          "edits": [],
+          "vendored_sha256": "d8842aff7c62ce347df3d044056b4ab69e2ca7b9e13c399606beb413817ab18c"
+        },
+        "utils/weight_initialization.py": {
+          "upstream_sha256": "e92148c28b1ae39dc7c7a0d52704594545fb09cd9eaa6b1b819c4a3836ad01e3",
+          "edits": [],
+          "vendored_sha256": "f298a573476cd530d08b0f56c95445feaa0133975eed4f2530e76d8df863712f"
+        }
+      },
+      "config_used": "configs/tcformer.yaml model_kwargs (F1 32, kernels 20/32/64, d_group 16, D 2, pools 8/7, dropout_conv 0.4, q_heads 4, kv_heads 2, trans_depth 5, trans_dropout 0.4, tcn_depth 2, kernel_length_tcn 4, dropout_tcn 0.3); optimiser adam lr 9e-4 beta1 0.5 wd 1e-3, linear-warmup cosine schedule",
+      "config_sha256": "114588b9e6e2c1e14f99e2f7510ffb365dae704c1c0d07e06d26c866a4df4fac"
+    },
+    "cbramod": {
+      "repository": "https://github.com/wjq-learning/CBraMod",
+      "commit": "b9e961003214326972c567eff390e75b0287e32a",
+      "license": "MIT (Copyright (c) 2025 Jiquan Wang)",
+      "files": {
+        "models/cbramod.py": {
+          "upstream_sha256": "caa7c5a0e4acd488a6f625b56f7b54dc4e7190d6b68ef5b76dff2cef86874a14",
+          "edits": [
+            "from models.criss_cross_transformer import -> from .criss_cross_transformer import"
+          ],
+          "vendored_sha256": "0602b8cc0b8e134d923fb5d7bf095cd19abed77ce001fed58b6b8afc5fc66434"
+        },
+        "models/criss_cross_transformer.py": {
+          "upstream_sha256": "90e90b8c98ca7eb543c44e32afc29674d3f71cb090692ad9f82db3a43edf334c",
+          "edits": [],
+          "vendored_sha256": "719436b88e22e6c3c1aeaa303dc34edec0cb0f245af7f3967c5cc10b6edefe78"
+        }
+      }
+    }
+  }
+}

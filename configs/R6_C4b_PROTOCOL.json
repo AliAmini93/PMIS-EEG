@@ -1,0 +1,66 @@
+{
+  "status": "FROZEN",
+  "protocol_id": "R6-C4b-OVERLAP-EPISODE-EEGNET-LEE2019-v1",
+  "frozen_utc": "2026-11-04T09:34:46.347728+00:00",
+  "design": {
+    "status_of_evidence": "Lee2019 participants and pairs as in C3/C4 (independent of HS-Stroke, not of C3/C4); EEGNet on the C4 window variants has never been run",
+    "model": "R4/Paper A EEGNet-8,2 exactly as in C2/C3b (kern 64 at 128 Hz, 100 epochs, batch 64, Adam 1e-3, max-norm); input window-local 2-s windows, 20 channels x 256 at 128 Hz, per-window channel z-score",
+    "variants": "V0.0 [0,2) s (100 % overlap with the scored window), V1.0 [1,3) (50 %), V2.0 [2,4) (0 %, same MI episode), P [-2.5,-0.5) (0 %, same trial pre-cue fixation)",
+    "pairs": "C3 pairs; per task an outcome-blind random quarter (rng [7421, participant, run]); arms C + v(a) / C + v(b) for every variant, one A/A per task; <= 48 arms per GPU group; CRN within pair (all 8 arms of a pair)",
+    "estimands": "C4 formulas; 54 participants; t95 CI; MC sign-flip (1e6, seed 7499); Holm over S1-S5; S5 compares the participant-level fraction d(V2.0)/d(V0.0) of EEGNet with that of C4 TS+LR on the same pairs (guard: not computed if any participant's d(V0.0) <= 0.5 points)",
+    "fail_closed": "as C2 (non-finite output, A/A mismatch, missing group, commitment mismatch -> BLOCKED)"
+  },
+  "hypotheses_declared_before_any_fit": {
+    "basis": "C3b: EEGNet exact-copy effect confirmed on Lee2019 (+13.29, 54/54); C4 (TS+LR, same pairs): about 91 % of the exact-copy advantage needs shared samples; residual = same-trial state (d(V2.0) 1.21 ~ d(P) 1.32)",
+    "H1_primary": "d(V0.0) for EEGNet on 2-s windows differs from 0; declared direction > 0",
+    "H2": "monotone decrease d(V0.0) > d(V1.0) > d(V2.0) (participant means; reported met / not met)",
+    "secondary_family_holm": [
+      "S1_sample_identity_increment_d100_minus_d0",
+      "S2_same_episode_no_shared_samples_d0",
+      "S3_episode_beyond_precue_d0_minus_dP",
+      "S4_precue_same_trial_dP",
+      "S5_EEGNet_minus_TSLR_fraction_without_shared_samples"
+    ],
+    "S5_two_sided": "EEGNet's per-participant fraction d(V2.0)/d(V0.0) differs from TS+LR's (C4) on the same pairs; no direction declared; guard: not computed if any participant's d(V0.0) <= 0.5 points",
+    "no_SESOI": "no equivalence region and no post-hoc relevance threshold"
+  },
+  "environment": {
+    "python": "3.11.15",
+    "numpy": "1.26.4",
+    "scipy": "1.16.0",
+    "sklearn": "1.6.1",
+    "torch": "2.9.1+cu128",
+    "cuda": "12.8",
+    "gpu": "NVIDIA GeForce RTX 5090"
+  },
+  "data_sha256": {
+    "lee2019_win_eegnet_4_40_128hz.npy": null,
+    "lee2019_meta.npz": null,
+    "R6_C4_pair_records_PRIVATE.npz": null
+  },
+  "plan": {
+    "commitment": null,
+    "n_pairs": 2160,
+    "n_arms": 17496,
+    "n_groups": 432,
+    "arms_by_type": {
+      "V0.0:A": 2160,
+      "V0.0:B": 2160,
+      "V1.0:A": 2160,
+      "V1.0:B": 2160,
+      "V2.0:A": 2160,
+      "V2.0:B": 2160,
+      "P:A": 2160,
+      "P:B": 2160,
+      "AA": 216
+    },
+    "max_group_size": 41
+  },
+  "resources": {
+    "gpu_cap_gb": 7.5,
+    "gpu_min_free_gb_before_each_group": 10.0,
+    "host_min_available_mb": 4096,
+    "max_wait_s": 21600,
+    "nice": 10
+  }
+}

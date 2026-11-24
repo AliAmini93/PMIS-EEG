@@ -1,0 +1,46 @@
+{
+  "status": "FROZEN",
+  "protocol_id": "R8-B-EEGNET-BENCHMARK-INFLATION-HSSTROKE-v1",
+  "frozen_utc": "2026-11-05T08:21:58.909077+00:00",
+  "hypotheses_declared_before_any_fit": {
+    "status": "HS-Stroke is the discovery cohort; R4's EEGNet benchmark run (S2, seeds 42-44, L/C/P) was planned but never completed, so no EEGNet benchmark outcome on these arms exists. TS+LR outcomes on the same arms are known (R4, C7).",
+    "H1": "EEGNet LEAKED - PLACEBO balanced accuracy > 0 (participant-level, 14 participants, exact sign-flip)",
+    "H2": "EEGNet LEAKED - PLACEBO exceeds TS+LR's on the same arms and seeds (C7 frozen R4 estimator decisions)",
+    "H3": "the learning-curve support bound CLEAN - LCB is below half of LEAKED - PLACEBO (0.5 x (L - P) - (C - LCB) > 0)",
+    "family_holm": [
+      "H1_EEGNet_LEAKED_minus_PLACEBO_BA",
+      "H2_EEGNet_minus_TSLR_LEAKED_minus_PLACEBO_BA",
+      "H3_support_bound_below_half_of_identity"
+    ],
+    "descriptive": "absolute BA per arm, PLACEBO - CLEAN, LEAKED - CLEAN, exposed-only / unexposed-only, probability-scale contrasts, TS+LR on the same arms, support-bound / identity ratio",
+    "reporting_rule": "benchmark-level BA and probability contrasts are reported as such; trial-level identity-swap contrasts (C2) are never described as benchmark inflation",
+    "no_SESOI": "no equivalence region and no post-hoc relevance threshold"
+  },
+  "design": {
+    "arms": "R4 frozen G2 manifest: LEAKED, PLACEBO (rows equal), CLEAN, LCB",
+    "split": "S2",
+    "seeds": [
+      42,
+      43,
+      44
+    ],
+    "model": "EEGNet-8,2 as R4/C2; LEAKED/PLACEBO as one CRN pair; CLEAN and LCB with the same init seed",
+    "unit": "participant (14); BA pooled over scored trials per participant, mean over seeds"
+  },
+  "environment": {
+    "python": "3.11.15",
+    "numpy": "1.26.4",
+    "torch": "2.9.1+cu128"
+  },
+  "data_sha256": {
+    "G2_eegnet_4_40_128hz.npy": null,
+    "R7_C7_trial_arrays_PRIVATE.npz": null,
+    "G2_instances.npz": null,
+    "G2_distinct.npz": null,
+    "G2_manifest.npz": null
+  },
+  "plan": {
+    "folds": 210,
+    "commitment": null
+  }
+}

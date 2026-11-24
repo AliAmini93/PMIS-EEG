@@ -1,0 +1,52 @@
+{
+  "status": "FROZEN",
+  "protocol_id": "R6-C1-AUDIT-TSLR-MECHANISM-v1",
+  "frozen_utc": "2026-11-03T22:09:35.423676+00:00",
+  "design": {
+    "status_of_evidence": "EXPLORATORY: HS-Stroke seed-42 pairs were examined in G3; nothing here is confirmatory",
+    "plan": "the frozen G3 plan, rebuilt and checked against the historical commitment when supplied; seed-42 tasks only",
+    "arms_per_pair": [
+      "E1 frozen G3 fit (bitwise reproduction)",
+      "X1 independent exact-optimum per-arm fit",
+      "E2/E4/E8 exact-optimum per-arm fit with k copies",
+      "F fixed base reference + exact LR",
+      "R reference of C+a' + exact LR on base rows only"
+    ],
+    "predictions_from_base_model": [
+      "IF (classical influence function)",
+      "NT (one Newton step)",
+      "k = 1, 2, 4, 8 canonical; k = 1 multiset base"
+    ],
+    "audit": "A1 every G3 public number recomputed from stored pair scores with independent aggregation code; A2 E1 vs stored (bitwise); A3 X1 vs stored primary arms (all pairs) and independent multiset, neighbour and placebo arms for one outcome-blind pair per task (rng [7201, seed, participant, fold])",
+    "estimands": "all contrasts use the G3 pair formula and G3 aggregation (class-balanced within participant, 14 participants equal weight); t95 CI and exact sign-flip reported, labelled exploratory",
+    "reporting": "every prediction P1-P4 is reported as met / not met, whatever the outcome"
+  },
+  "predictions_declared_before_any_fit": {
+    "P1_reference_pathway_minor": "fixed-reference d / exact d in [0.9, 1.1] and |reference-only d| < 0.1 points",
+    "P2_first_order_law": "Newton-one-step d / exact d in [0.8, 1.25] (participant means) and pair-level Pearson r >= 0.9",
+    "P3_dose_sublinear": "exact d(k) increases with k = 1, 2, 4, 8 and d(8) / d(1) < 8",
+    "P4_solver_tolerance_negligible": "|exact-optimum d - G3 (lbfgs tol 1e-4) d| < 0.05 points (participant means)"
+  },
+  "environment": {
+    "python": "3.11.15",
+    "numpy": "1.26.4",
+    "scipy": "1.16.0",
+    "sklearn": "1.6.1"
+  },
+  "data_sha256": {
+    "G2_covs_8_30.npy": null,
+    "G3_pair_scores_PRIVATE.npz": null,
+    "G2_instances.npz": null,
+    "G2_distinct.npz": null,
+    "G2_manifest.npz": null
+  },
+  "g3_plan_commitment_reproduced": null,
+  "n_pairs_seed42": 8080,
+  "n_tasks_seed42": 70,
+  "resources": {
+    "max_workers": 4,
+    "nice": 10,
+    "start_min_available_mb": 4096,
+    "run_min_available_mb": 2048
+  }
+}

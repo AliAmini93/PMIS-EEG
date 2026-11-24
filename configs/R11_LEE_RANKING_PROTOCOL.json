@@ -1,0 +1,705 @@
+{
+  "status": "FROZEN",
+  "protocol_id": "R11-B-LEE2019-DOSE-RANKING-PREDICTION-v1",
+  "frozen_utc": "2026-11-06T21:06:28.307009+00:00",
+  "pre_registration": {
+    "question": "Does a frozen, quantitative single-copy sensitivity prediction (the exposed-trial BA contrast of one added exact copy, measured in R7-C6 / R6-C3a) anticipate the benchmark-level distortion of pairwise model gaps, the rank-crossing dose and model-selection regret when a controlled fraction of scored test trials has exact copies in training?",
+    "evidence_status": "Lee2019 participants, folds, training / validation sets and the single-copy contrasts are those of R6-C3 / R7-C6 (54 known participants; not an independent cohort). No R11-B arm (CLEAN, PLACEBO, LEAKED at any dose, L40c) was ever fitted. The near-clean gaps are effectively known in advance (G0); the prospective endpoints are the dose arms. Not an external replication; not independent of the prediction source.",
+    "dose": "delta = fraction of the 100 scored held-out-run trials whose exact copies are in training: 0.2, 0.4, 0.6, 1.0 (10, 20, 30, 50 per class; nested, class-stratified, outcome-blind). Fixed rows: every non-CLEAN arm holds 240 base + 100 extra rows (50 per class); L_delta's extra rows are 100 delta scored-trial copies plus 100 (1 - delta) base copies; PLACEBO's are 100 base copies (the delta = 0 point).",
+    "primary_pair": "ShallowConvNet - EEGNet (identical tasks, base, pairs and recipe as R7-C6). Read-outs: final epoch and minimum-validation-loss epoch from the same runs. TS+LR pairs are secondary (their single-copy prior was measured on a 300-row base).",
+    "H1_primary": "Distortion prediction D_pred(delta) = delta * dc (frozen). Loss = sum over 4 doses of squared participant error. Test L(competitor) - L(prediction) > 0 against ZERO (D = 0) and CEILING (every exposed trial correct for both models, from the observed PLACEBO arm), for final and ES: Holm over 4 (all discriminating a priori by the 2-point rule). Accuracy: 90 % CI of the cohort-mean error inside +/- 2 BA at every dose.",
+    "H1_secondary": "The same for EEGNet - TS+LR and ShallowConvNet - TS+LR at both read-outs; only comparisons discriminating a priori (|prediction - competitor| >= 2 at some dose) count; Holm over those.",
+    "classification": "per pair and read-out: CONTRADICTED if a discriminating competitor is significantly better; SUPPORTED_STRONG if the prediction beats every discriminating competitor (Holm) and is within +/- 2 BA at every dose; SUPPORTED_RELATIVE if it beats every discriminating competitor only; PARTIAL if some; else NOT_SUPPORTED.",
+    "H2_crossing": "For pairs with a frozen eligible crossing prediction (prior gap CI below 0, dc > 0, bootstrap interval of delta* inside (0, 1]): primary ShallowConvNet - EEGNet (ES), delta* = 0.442 [0.297, 0.644]; secondary ShallowConvNet - TS+LR (final), 0.301 [0.109, 0.442]. delta*_obs = first zero crossing of the cohort-mean leaked-arm gap over (P, 0.2, 0.4, 0.6, 1.0), linear between points. Classes: CROSSING_AS_PREDICTED (inside the frozen interval), CROSSING_EARLIER / LATER_THAN_PREDICTED, NO_CROSSING_BY_1.0, NOT_EVALUABLE_PREMISE (the gap under PLACEBO is not negative).",
+    "reversal": "At each dose, the R10-A rule on P -> L_delta with D tested per dose (Holm over the 4 doses of the pair and read-out): NO_REVERSAL / DESCRIPTIVE_REVERSAL / SUPPORTED_CROSSING / SUPPORTED_REVERSAL.",
+    "selection": "Roster {TS+LR, EEGNet, ShallowConvNet} per read-out: choose by the LEAKED cohort mean at each dose; evaluate on the matched PLACEBO arm (primary) and on CLEAN. Regret relevant if >= 2 BA. A top-1 change counts as supported only if its pair is SUPPORTED_REVERSAL at that dose. Within-benchmark counterfactual only.",
+    "decomposition": "delta = 0.4 split halves (H1 = S_0.4, H2 disjoint, class-stratified): E = OWN - OTHER (exposure at fixed support of 40 same-run copies) vs the single-copy c; S = OTHER - P (support). Stitched counterfactuals, descriptive.",
+    "overall": "On R1: CONTRADICTED if the primary pair is CONTRADICTED at either read-out; SUPPORTED if it is SUPPORTED_STRONG at both read-outs and the ES crossing is CROSSING_AS_PREDICTED; PARTIAL if it is SUPPORTED_STRONG / RELATIVE at either read-out or the crossing is as predicted; else NOT_SUPPORTED. The final verdict is the lower of R1 and R2 (deep models re-trained with independent initialisation / order / dropout seeds; TS+LR is deterministic), order SUPPORTED > PARTIAL > NOT_SUPPORTED > CONTRADICTED.",
+    "inference": "54 participants; t95; two-sided MC sign-flip 1e6 (seed 11399); participant bootstrap 20,000 (seed 11010); Holm within families; SESOI 2 BA points (vendored R4 / Paper A).",
+    "forbidden_after_any_fit": "changing a dose, arm, seed, read-out, model, prediction, competitor, threshold, family or participant set; adding a model."
+  },
+  "design": {
+    "doses": [
+      0.2,
+      0.4,
+      0.6,
+      1.0
+    ],
+    "group_A": [
+      "P",
+      "L20",
+      "L40",
+      "L40c",
+      "L60",
+      "L100",
+      "AA"
+    ],
+    "group_B": [
+      "C",
+      "AAC"
+    ],
+    "streams": {
+      "dose": 11201,
+      "base": 11202,
+      "seeds": {
+        "R1": [
+          11301,
+          11302
+        ],
+        "R2": [
+          11311,
+          11312
+        ]
+      }
+    },
+    "models": {
+      "EEGNet": "pmis_r7.deep_group.EEGNetG (R4 EEGNet-8,2), C6 recipe",
+      "Shallow": "pmis_r7.deep_group.GroupShallow (Schirrmeister 2017 at 128 Hz), C6 recipe",
+      "TSLR": "exact-optimum TS+LR (R6-C3a / R10-B estimator)"
+    },
+    "readouts": {
+      "final": "epoch 100",
+      "es": "min validation cross-entropy epoch (C6's 60 trials)",
+      "exact": "TS+LR (used for both read-outs)"
+    }
+  },
+  "frozen_predictions": {
+    "models": {
+      "TSLR/final": {
+        "c": 16.788194444444443,
+        "c_ci95": [
+          14.5792775245269,
+          18.997111364361988
+        ],
+        "d_p": 9.157512329382497,
+        "placebo_BA_paired_trials": 72.36979166666667,
+        "clean_BA_whole_run": null,
+        "inflation_pred": {
+          "0.2": 3.357638888888889,
+          "0.4": 6.715277777777778,
+          "0.6": 10.072916666666666,
+          "1.0": 16.788194444444443
+        },
+        "source": "C3a/TSLR300/exact"
+      },
+      "TSLR/es": {
+        "c": 16.788194444444443,
+        "c_ci95": [
+          14.5792775245269,
+          18.997111364361988
+        ],
+        "d_p": 9.157512329382497,
+        "placebo_BA_paired_trials": 72.36979166666667,
+        "clean_BA_whole_run": null,
+        "inflation_pred": {
+          "0.2": 3.357638888888889,
+          "0.4": 6.715277777777778,
+          "0.6": 10.072916666666666,
+          "1.0": 16.788194444444443
+        },
+        "source": "C3a/TSLR300/exact"
+      },
+      "EEGNet/final": {
+        "c": 22.175094709816932,
+        "c_ci95": [
+          18.230438298465927,
+          26.119751121167937
+        ],
+        "d_p": 14.041076772973202,
+        "placebo_BA_paired_trials": 70.88554578137911,
+        "clean_BA_whole_run": 69.68981481481481,
+        "inflation_pred": {
+          "0.2": 4.435018941963387,
+          "0.4": 8.870037883926774,
+          "0.6": 13.305056825890158,
+          "1.0": 22.175094709816932
+        },
+        "source": "C6/EEGNet/final"
+      },
+      "EEGNet/es": {
+        "c": 16.701140937252053,
+        "c_ci95": [
+          13.991079778293813,
+          19.411202096210292
+        ],
+        "d_p": 8.650611594976526,
+        "placebo_BA_paired_trials": 68.73463470685694,
+        "clean_BA_whole_run": 68.88425925925925,
+        "inflation_pred": {
+          "0.2": 3.3402281874504105,
+          "0.4": 6.680456374900821,
+          "0.6": 10.020684562351232,
+          "1.0": 16.701140937252053
+        },
+        "source": "C6/EEGNet/es"
+      },
+      "Shallow/final": {
+        "c": 29.591412959468517,
+        "c_ci95": [
+          25.180803235236638,
+          34.002022683700396
+        ],
+        "d_p": 30.840289094073583,
+        "placebo_BA_paired_trials": 68.51955400566511,
+        "clean_BA_whole_run": 69.42546296296295,
+        "inflation_pred": {
+          "0.2": 5.918282591893703,
+          "0.4": 11.836565183787407,
+          "0.6": 17.75484777568111,
+          "1.0": 29.591412959468517
+        },
+        "source": "C6/Shallow/final"
+      },
+      "Shallow/es": {
+        "c": 23.697136197136192,
+        "c_ci95": [
+          20.63124958672953,
+          26.763022807542853
+        ],
+        "d_p": 17.59240027319194,
+        "placebo_BA_paired_trials": 64.8934039211817,
+        "clean_BA_whole_run": 65.79305555555555,
+        "inflation_pred": {
+          "0.2": 4.739427239427239,
+          "0.4": 9.478854478854478,
+          "0.6": 14.218281718281714,
+          "1.0": 23.697136197136192
+        },
+        "source": "C6/Shallow/es"
+      }
+    },
+    "pairs": {
+      "Shallow-EEGNet/final": {
+        "dc": 7.416318249651583,
+        "dc_ci95": [
+          4.688773151561614,
+          10.143863347741553
+        ],
+        "gap_prior": -0.26435185185185167,
+        "gap_prior_ci95": [
+          -1.2143363044449853,
+          0.6856326007412821
+        ],
+        "gap_measure": "clean_run",
+        "note": "same tasks, same 240-row base",
+        "D_pred": {
+          "0.2": 1.4832636499303167,
+          "0.4": 2.9665272998606333,
+          "0.6": 4.44979094979095,
+          "1.0": 7.416318249651583
+        },
+        "G_L_pred": {
+          "0.2": 1.218911798078465,
+          "0.4": 2.7021754480087816,
+          "0.6": 4.185439097939098,
+          "1.0": 7.151966397799732
+        },
+        "ceiling_prior_D": {
+          "0.2": 0.05287037037037034,
+          "0.4": 0.10574074074074068,
+          "0.6": 0.158611111111111,
+          "1.0": 0.26435185185185167
+        },
+        "D_p_pred": {
+          "0.2": 3.359842464220077,
+          "0.4": 6.719684928440154,
+          "0.6": 10.07952739266023,
+          "1.0": 16.799212321100384
+        },
+        "discriminating_vs_ZERO": true,
+        "discriminating_vs_CEILING": true,
+        "delta_star_pred": 0.03564462081495368,
+        "delta_star_pred_ci95": [
+          -0.09929441991003392,
+          0.16125539826323565
+        ],
+        "crossing_test_eligible": false,
+        "primary": true
+      },
+      "Shallow-EEGNet/es": {
+        "dc": 6.99599525988415,
+        "dc_ci95": [
+          4.630747050294178,
+          9.361243469474122
+        ],
+        "gap_prior": -3.0912037037037043,
+        "gap_prior_ci95": [
+          -4.1629928039426005,
+          -2.019414603464808
+        ],
+        "gap_measure": "clean_run",
+        "note": "same tasks, same 240-row base",
+        "D_pred": {
+          "0.2": 1.3991990519768303,
+          "0.4": 2.7983981039536605,
+          "0.6": 4.19759715593049,
+          "1.0": 6.99599525988415
+        },
+        "G_L_pred": {
+          "0.2": -1.692004651726874,
+          "0.4": -0.29280559975004383,
+          "0.6": 1.1063934522267855,
+          "1.0": 3.904791556180446
+        },
+        "ceiling_prior_D": {
+          "0.2": 0.6182407407407409,
+          "0.4": 1.2364814814814817,
+          "0.6": 1.8547222222222226,
+          "1.0": 3.0912037037037043
+        },
+        "D_p_pred": {
+          "0.2": 1.7883577356430829,
+          "0.4": 3.5767154712861657,
+          "0.6": 5.365073206929248,
+          "1.0": 8.941788678215413
+        },
+        "discriminating_vs_ZERO": true,
+        "discriminating_vs_CEILING": true,
+        "delta_star_pred": 0.44185331591475274,
+        "delta_star_pred_ci95": [
+          0.29731550960929465,
+          0.6441483704520823
+        ],
+        "crossing_test_eligible": true,
+        "primary": true
+      },
+      "EEGNet-TSLR/final": {
+        "dc": 5.3869002653724865,
+        "dc_ci95": [
+          2.831295247996114,
+          7.942505282748859
+        ],
+        "gap_prior": -1.4842458852875522,
+        "gap_prior_ci95": [
+          -4.358307891035027,
+          1.3898161204599226
+        ],
+        "gap_measure": "plc_pairs",
+        "note": "paired trials only; TS+LR base 300 vs 240",
+        "D_pred": {
+          "0.2": 1.0773800530744972,
+          "0.4": 2.1547601061489945,
+          "0.6": 3.232140159223492,
+          "1.0": 5.3869002653724865
+        },
+        "G_L_pred": {
+          "0.2": -0.40686583221305495,
+          "0.4": 0.6705142208614423,
+          "0.6": 1.7478942739359398,
+          "1.0": 3.9026543800849343
+        },
+        "ceiling_prior_D": {
+          "0.2": 0.29684917705751046,
+          "0.4": 0.5936983541150209,
+          "0.6": 0.8905475311725313,
+          "1.0": 1.4842458852875522
+        },
+        "D_p_pred": {
+          "0.2": 0.9767128887181411,
+          "0.4": 1.9534257774362822,
+          "0.6": 2.930138666154423,
+          "1.0": 4.883564443590705
+        },
+        "discriminating_vs_ZERO": true,
+        "discriminating_vs_CEILING": true,
+        "delta_star_pred": 0.27552874791991744,
+        "delta_star_pred_ci95": [
+          -0.38970024571201556,
+          0.6197813098542405
+        ],
+        "crossing_test_eligible": false,
+        "primary": false
+      },
+      "EEGNet-TSLR/es": {
+        "dc": -0.08705350719239785,
+        "dc_ci95": [
+          -2.044923521198534,
+          1.8708165068137381
+        ],
+        "gap_prior": -3.635156959809738,
+        "gap_prior_ci95": [
+          -6.6807386219804386,
+          -0.5895752976390374
+        ],
+        "gap_measure": "plc_pairs",
+        "note": "paired trials only; TS+LR base 300 vs 240",
+        "D_pred": {
+          "0.2": -0.01741070143847957,
+          "0.4": -0.03482140287695914,
+          "0.6": -0.05223210431543871,
+          "1.0": -0.08705350719239785
+        },
+        "G_L_pred": {
+          "0.2": -3.652567661248218,
+          "0.4": -3.6699783626866975,
+          "0.6": -3.6873890641251768,
+          "1.0": -3.722210467002136
+        },
+        "ceiling_prior_D": {
+          "0.2": 0.7270313919619477,
+          "0.4": 1.4540627839238953,
+          "0.6": 2.1810941758858426,
+          "1.0": 3.635156959809738
+        },
+        "D_p_pred": {
+          "0.2": -0.10138014688119353,
+          "0.4": -0.20276029376238705,
+          "0.6": -0.30414044064358053,
+          "1.0": -0.5069007344059676
+        },
+        "discriminating_vs_ZERO": false,
+        "discriminating_vs_CEILING": true,
+        "delta_star_pred": -41.75773127411904,
+        "delta_star_pred_ci95": [
+          -55.30844896828912,
+          63.5971066559424
+        ],
+        "crossing_test_eligible": false,
+        "primary": false
+      },
+      "Shallow-TSLR/final": {
+        "dc": 12.80321851502407,
+        "dc_ci95": [
+          9.777696097482504,
+          15.828740932565637
+        ],
+        "gap_prior": -3.8502376610015494,
+        "gap_prior_ci95": [
+          -6.64095247247595,
+          -1.0595228495271485
+        ],
+        "gap_measure": "plc_pairs",
+        "note": "paired trials only; TS+LR base 300 vs 240",
+        "D_pred": {
+          "0.2": 2.560643703004814,
+          "0.4": 5.121287406009628,
+          "0.6": 7.681931109014442,
+          "1.0": 12.80321851502407
+        },
+        "G_L_pred": {
+          "0.2": -1.2895939579967353,
+          "0.4": 1.2710497450080789,
+          "0.6": 3.831693448012893,
+          "1.0": 8.95298085402252
+        },
+        "ceiling_prior_D": {
+          "0.2": 0.77004753220031,
+          "0.4": 1.54009506440062,
+          "0.6": 2.3101425966009295,
+          "1.0": 3.8502376610015494
+        },
+        "D_p_pred": {
+          "0.2": 4.336555352938218,
+          "0.4": 8.673110705876436,
+          "0.6": 13.009666058814652,
+          "1.0": 21.682776764691088
+        },
+        "discriminating_vs_ZERO": true,
+        "discriminating_vs_CEILING": true,
+        "delta_star_pred": 0.30072420122201676,
+        "delta_star_pred_ci95": [
+          0.1087581124783225,
+          0.4416536511140105
+        ],
+        "crossing_test_eligible": true,
+        "primary": false
+      },
+      "Shallow-TSLR/es": {
+        "dc": 6.908941752691752,
+        "dc_ci95": [
+          4.736859957327453,
+          9.081023548056052
+        ],
+        "gap_prior": -7.476387745484969,
+        "gap_prior_ci95": [
+          -10.361689804361136,
+          -4.5910856866088015
+        ],
+        "gap_measure": "plc_pairs",
+        "note": "paired trials only; TS+LR base 300 vs 240",
+        "D_pred": {
+          "0.2": 1.3817883505383506,
+          "0.4": 2.763576701076701,
+          "0.6": 4.145365051615051,
+          "1.0": 6.908941752691752
+        },
+        "G_L_pred": {
+          "0.2": -6.094599394946618,
+          "0.4": -4.712811044408268,
+          "0.6": -3.331022693869918,
+          "1.0": -0.5674459927932167
+        },
+        "ceiling_prior_D": {
+          "0.2": 1.4952775490969938,
+          "0.4": 2.9905550981939877,
+          "0.6": 4.485832647290981,
+          "1.0": 7.476387745484969
+        },
+        "D_p_pred": {
+          "0.2": 1.686977588761889,
+          "0.4": 3.373955177523778,
+          "0.6": 5.060932766285666,
+          "1.0": 8.434887943809445
+        },
+        "discriminating_vs_ZERO": true,
+        "discriminating_vs_CEILING": false,
+        "delta_star_pred": 1.082132114165261,
+        "delta_star_pred_ci95": [
+          0.7334533968505302,
+          1.5432478197967099
+        ],
+        "crossing_test_eligible": false,
+        "primary": false
+      }
+    },
+    "selection": {
+      "final": {
+        "0.0": {
+          "predicted_L_BA": {
+            "TSLR": 72.36979166666667,
+            "EEGNet": 70.88554578137911,
+            "Shallow": 68.51955400566511
+          },
+          "winner_L": "TSLR",
+          "winner_P": "TSLR",
+          "regret_on_P": 0.0,
+          "regret_relevant": false
+        },
+        "0.2": {
+          "predicted_L_BA": {
+            "TSLR": 75.72743055555556,
+            "EEGNet": 75.3205647233425,
+            "Shallow": 74.43783659755881
+          },
+          "winner_L": "TSLR",
+          "winner_P": "TSLR",
+          "regret_on_P": 0.0,
+          "regret_relevant": false
+        },
+        "0.4": {
+          "predicted_L_BA": {
+            "TSLR": 79.08506944444444,
+            "EEGNet": 79.75558366530588,
+            "Shallow": 80.35611918945253
+          },
+          "winner_L": "Shallow",
+          "winner_P": "TSLR",
+          "regret_on_P": 3.8502376610015574,
+          "regret_relevant": true
+        },
+        "0.6": {
+          "predicted_L_BA": {
+            "TSLR": 82.44270833333334,
+            "EEGNet": 84.19060260726927,
+            "Shallow": 86.27440178134623
+          },
+          "winner_L": "Shallow",
+          "winner_P": "TSLR",
+          "regret_on_P": 3.8502376610015574,
+          "regret_relevant": true
+        },
+        "1.0": {
+          "predicted_L_BA": {
+            "TSLR": 89.15798611111111,
+            "EEGNet": 93.06064049119604,
+            "Shallow": 98.11096696513363
+          },
+          "winner_L": "Shallow",
+          "winner_P": "TSLR",
+          "regret_on_P": 3.8502376610015574,
+          "regret_relevant": true
+        }
+      },
+      "es": {
+        "0.0": {
+          "predicted_L_BA": {
+            "TSLR": 72.36979166666667,
+            "EEGNet": 68.73463470685694,
+            "Shallow": 64.8934039211817
+          },
+          "winner_L": "TSLR",
+          "winner_P": "TSLR",
+          "regret_on_P": 0.0,
+          "regret_relevant": false
+        },
+        "0.2": {
+          "predicted_L_BA": {
+            "TSLR": 75.72743055555556,
+            "EEGNet": 72.07486289430734,
+            "Shallow": 69.63283116060894
+          },
+          "winner_L": "TSLR",
+          "winner_P": "TSLR",
+          "regret_on_P": 0.0,
+          "regret_relevant": false
+        },
+        "0.4": {
+          "predicted_L_BA": {
+            "TSLR": 79.08506944444444,
+            "EEGNet": 75.41509108175777,
+            "Shallow": 74.37225840003617
+          },
+          "winner_L": "TSLR",
+          "winner_P": "TSLR",
+          "regret_on_P": 0.0,
+          "regret_relevant": false
+        },
+        "0.6": {
+          "predicted_L_BA": {
+            "TSLR": 82.44270833333334,
+            "EEGNet": 78.75531926920817,
+            "Shallow": 79.11168563946342
+          },
+          "winner_L": "TSLR",
+          "winner_P": "TSLR",
+          "regret_on_P": 0.0,
+          "regret_relevant": false
+        },
+        "1.0": {
+          "predicted_L_BA": {
+            "TSLR": 89.15798611111111,
+            "EEGNet": 85.43577564410899,
+            "Shallow": 88.59054011831789
+          },
+          "winner_L": "TSLR",
+          "winner_P": "TSLR",
+          "regret_on_P": 0.0,
+          "regret_relevant": false
+        }
+      }
+    },
+    "g0_sha256": null
+  },
+  "prediction_source_sha256": {
+    "reports/aggregate/R11_B_G0_existing.json": null
+  },
+  "analysis_constants": {
+    "signflip_B": 1000000,
+    "signflip_seed": 11399,
+    "boot_B": 20000,
+    "boot_seed": 11010,
+    "alpha": 0.05,
+    "sesoi": 2.0
+  },
+  "environment": {
+    "python": "3.11.15",
+    "numpy": "1.26.4",
+    "torch": "2.9.1+cu128"
+  },
+  "resources": {
+    "gpu_cap_gb": 6.0,
+    "gpu_min_free_gb": 6.0,
+    "tslr_workers": 4,
+    "nice": 10,
+    "gpu_budget_process_hours": 6.0,
+    "order": "R1 EEGNet + Shallow and TS+LR first; R2 only after R1 is complete and only if the projected total stays within the GPU budget",
+    "pilot": {
+      "stage": "R11-B G2 pilot",
+      "inputs": "Gaussian noise EEG / random SPD covariances; real fold geometry only",
+      "EEGNet": {
+        "fold_seconds": [
+          8.18378496170044,
+          7.494776725769043
+        ],
+        "peak_gb": 1.6342582702636719,
+        "aa_exact": true
+      },
+      "Shallow": {
+        "fold_seconds": [
+          2.5734915733337402,
+          2.503530979156494
+        ],
+        "peak_gb": 1.0753931999206543,
+        "aa_exact": true
+      },
+      "TSLR": {
+        "fold_seconds": 0.5211352109909058,
+        "aa_exact": true
+      },
+      "projection": {
+        "deep_process_hours_per_replicate": {
+          "EEGNet": 0.4496866035461426,
+          "Shallow": 0.15021185874938964
+        },
+        "deep_process_hours_R1_plus_R2": 1.1997969245910645,
+        "tslr_cpu_hours_single_worker": 0.031268112659454346,
+        "budget_process_hours": 6.0,
+        "within_budget": true
+      }
+    }
+  },
+  "data_sha256": {
+    "data/r6_c3/lee2019_meta.npz": null,
+    "data/r6_c3/lee2019_eegnet_4_40_128hz.npy": null,
+    "data/r6_c3/lee2019_covs_8_30.npy": null
+  },
+  "plan": {
+    "folds": 216,
+    "participants": 54,
+    "commitment": null,
+    "c6_commitment": null,
+    "doses": [
+      0.2,
+      0.4,
+      0.6,
+      1.0
+    ],
+    "n_per_class": {
+      "0.2": 10,
+      "0.4": 20,
+      "0.6": 30,
+      "1.0": 50
+    },
+    "arm_rows": {
+      "P": 340,
+      "L20": 340,
+      "L40": 340,
+      "L40c": 340,
+      "L60": 340,
+      "L100": 340,
+      "AA": 340,
+      "C": 240,
+      "AAC": 240
+    },
+    "arm_class_counts_first_fold": {
+      "P": [
+        170,
+        170
+      ],
+      "L20": [
+        170,
+        170
+      ],
+      "L40": [
+        170,
+        170
+      ],
+      "L40c": [
+        170,
+        170
+      ],
+      "L60": [
+        170,
+        170
+      ],
+      "L100": [
+        170,
+        170
+      ],
+      "AA": [
+        170,
+        170
+      ],
+      "C": [
+        120,
+        120
+      ],
+      "AAC": [
+        120,
+        120
+      ]
+    },
+    "deep_fits_per_fold_per_model": 9,
+    "tslr_fits_per_fold": 8
+  }
+}

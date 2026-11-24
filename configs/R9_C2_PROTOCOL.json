@@ -1,0 +1,51 @@
+{
+  "status": "FROZEN",
+  "protocol_id": "R9-C2-SPLITHALF-SUPPORT-EXPOSURE-TSLR-HSSTROKE-v1",
+  "frozen_utc": "2026-11-05T19:44:46.476689+00:00",
+  "hypotheses_declared_before_any_fit": {
+    "status": "HS-Stroke discovery cohort; the TS+LR LEAKED / PLACEBO outcomes on these arms are known (R4; reproduced in R7-C7; L - P +2.25 BA on seeds 42-44); R9-C's EEGNet decomposition on the identical halves is known (C1 +12.18, C2 +1.27 BA). The TS+LR split arms L1 / L2 have never been fitted, so C1-C3 below are new outcomes.",
+    "question": "Is the linear decoder's benchmark inflation also mostly own-copy exposure? R4's conditional learning-curve bound attributed up to 42 % (S1) / 51 % (S2) of TS+LR inflation to support, against 13 % for EEGNet in R8-B; both bounds rest on premises that fail (R9-C audit). This experiment replaces the TS+LR bound by randomisation.",
+    "C1": "exposure with support fixed: BA of exposed scored trials in their own-exposed half arm minus the other-half arm > 0",
+    "C2": "support of half the test-trial copies (same runs, no own copy): other-half arm minus PLACEBO != 0 (two-sided)",
+    "C3": "exposure exceeds that support at equal distinct-trial count: C1 - C2 > 0",
+    "family_holm": [
+      "C1_exposure_support_fixed_own_minus_otherhalf_BA",
+      "C2_support_half_sameRun_testcopies_otherhalf_minus_placebo_BA",
+      "C3_exposure_minus_support_BA"
+    ],
+    "descriptive": "as R9-C: absolute BA; total half = own - P; support share = C2 / total (ratio of cohort means); full L - P on exposed / all / unexposed scored trials; full - total half; support of a half for unexposed trials; probability-scale versions. In addition: the side-by-side EEGNet values from the committed R9-C aggregate (descriptive; no cross-decoder test is declared)",
+    "interpretation_rule": "identified at HALF exposure density only (as R9-C). Whatever the outcome, the manuscript reports the TS+LR and EEGNet decompositions side by side and states any benchmark-level exposure claim per decoder; R4's TS+LR learning-curve bound is reported only as a historical, conditional figure",
+    "no_SESOI": "no equivalence region and no post-hoc relevance threshold; all results reported whatever their sign"
+  },
+  "design": {
+    "arms": "R4 frozen G2 manifest LEAKED (L) and PLACEBO (P); L1 / L2 and the halves H1 / H2 constructed exactly as R9-C (split_bench, RNG default_rng([9201, seed, participant, fold])); identical plan commitment to R9-C",
+    "model": "frozen vendored R4 TSLRw through R7-C7's fit function c7._r4: per-arm multiplicity-weighted Karcher reference, tangent map, sklearn lbfgs L2-LR (C = 1), R4's single-class rule; single-thread BLAS; deterministic",
+    "checks": "fail closed: split invariants (as R9-C); finite outputs; A/A independent refit of L on every 10th fold (R9-C's global order) must be exactly equal; L and P must reproduce R7-C7's stored S2 seed 42-44 probabilities and hard decisions bit for bit (max |dp| = 0, agreement = 1)",
+    "unit": "participant (14): class-balanced BA pooled over a participant's exposed scored trials per seed, mean over seeds 42-44 (split_analysis, unchanged from R9-C); exact sign-flip (2^14), Holm over C1-C3"
+  },
+  "environment": {
+    "python": "3.11.15",
+    "numpy": "1.26.4",
+    "scipy": "1.16.0",
+    "sklearn": "1.6.1"
+  },
+  "data_sha256": {
+    "G2_covs_8_30.npy": null,
+    "R7_C7_trial_arrays_PRIVATE.npz": null,
+    "R9_C_results.json": null,
+    "G2_instances.npz": null,
+    "G2_distinct.npz": null,
+    "G2_manifest.npz": null
+  },
+  "plan": {
+    "folds": 210,
+    "unit_tasks": 42,
+    "aa_folds": 21,
+    "commitment_identical_to_R9_C": null
+  },
+  "resources": {
+    "max_workers": 4,
+    "nice": 10,
+    "rule": "G3 start / run guards"
+  }
+}

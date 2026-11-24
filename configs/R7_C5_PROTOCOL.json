@@ -1,0 +1,56 @@
+{
+  "status": "FROZEN",
+  "protocol_id": "R7-C5-FINE-SHIFT-LEE2019-v1",
+  "frozen_utc": "2026-11-04T14:21:53.441003+00:00",
+  "design": {
+    "status_of_evidence": "Lee2019 participants and pairs as in C3/C4 (independent of HS-Stroke, not of C3/C4); the fine shifts were never fitted",
+    "shifts": "copies [d, d + 2) s for d = 0, 62.5, 125, 250, 500, 1000 ms of the scored window [0, 2) s; window-local filtering",
+    "pairs": "C3 pairs; per task an outcome-blind 5 of 40 (rng [7701, participant, run]) for both models (same pairs)",
+    "models": "TS+LR exact optimum (per-arm Karcher + damped Newton) and EEGNet-8,2 exactly as C2/C3b/C4b (CRN, A/A per task)",
+    "inference": "54 participants; t95 CI; MC sign-flip (1e6, seed 7499); Holm over the 6-test family"
+  },
+  "hypotheses_declared_before_any_fit": {
+    "basis": "C4 (TS+LR: d 12.84 -> 8.31 -> 5.63 at 0 / 0.5 / 1 s shifts) and C4b (EEGNet: 13.30 -> 1.14 at 0 / 1 s): EEGNet's advantage is tied to the time-aligned waveform; its pooled temporal resolution is 0.25 s (8 bins over 2 s)",
+    "H1_mechanistic_scale": "EEGNet's per-participant retained fraction d(shift) / d(0) is > 0.5 at 62.5 ms (H3a) and < 0.5 at 250 ms (H3b): the decay happens on the scale of its pooled time bins",
+    "H2_model_contrast": "EEGNet retains a smaller fraction than TS+LR at every shift (two-sided tests at 62.5, 125, 250, 500 ms)",
+    "family_holm": [
+      "EEGNet_minus_TSLR_fraction_D62.5",
+      "EEGNet_minus_TSLR_fraction_D125",
+      "EEGNet_minus_TSLR_fraction_D250",
+      "EEGNet_minus_TSLR_fraction_D500",
+      "H3a_EEGNet_fraction_D62.5_above_0.5",
+      "H3b_EEGNet_fraction_D250_below_0.5"
+    ],
+    "guard": "fractions are not computed if any participant's d(0) <= 0.5 points for either model",
+    "descriptive": "full curves (6 shifts) per model with t95 CIs; first shift below half of d(0)",
+    "no_SESOI": "no equivalence region and no post-hoc relevance threshold"
+  },
+  "environment": {
+    "python": "3.11.15",
+    "numpy": "1.26.4",
+    "scipy": "1.16.0",
+    "sklearn": "1.6.1",
+    "torch": "2.9.1+cu128",
+    "cuda": "12.8"
+  },
+  "data_sha256": {
+    "lee2019_win_covs_8_30.npy": null,
+    "lee2019_win_eegnet_4_40_128hz.npy": null,
+    "lee2019_shift_covs_8_30.npy": null,
+    "lee2019_shift_eegnet_4_40_128hz.npy": null,
+    "lee2019_meta.npz": null
+  },
+  "plan": {
+    "commitment": null,
+    "pairs": 1080,
+    "eegnet_arms": 13176,
+    "eegnet_groups": 432,
+    "tslr_fits": 12960
+  },
+  "resources": {
+    "tslr_max_workers": 4,
+    "nice": 10,
+    "gpu_cap_gb": 7.5,
+    "gpu_min_free_gb": 10.0
+  }
+}

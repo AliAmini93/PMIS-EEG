@@ -1,0 +1,48 @@
+{
+  "status": "FROZEN",
+  "protocol_id": "R9-C-SPLITHALF-SUPPORT-EXPOSURE-HSSTROKE-v1",
+  "frozen_utc": "2026-11-05T14:53:39.500085+00:00",
+  "hypotheses_declared_before_any_fit": {
+    "status": "HS-Stroke discovery cohort; R8-B's LEAKED / PLACEBO outcomes on these arms are known (L - P +9.40 BA); the split-half arms L1 / L2 have never been trained, so the decomposition outcomes are new. Exploratory with respect to the total, first-time with respect to the decomposition.",
+    "question": "Is R8-B's EEGNet benchmark inflation exposure (own copy) or support (extra distinct same-run test trials)? R8-B bounded support only through CLEAN - LCB, which assumes diminishing returns and exchangeability of the removed non-test trials with the extra test-trial copies.",
+    "C1": "exposure with support fixed: BA of exposed scored trials in their own-exposed half arm minus the other-half arm > 0",
+    "C2": "support of half the test-trial copies (same runs, no own copy): other-half arm minus PLACEBO != 0 (two-sided)",
+    "C3": "exposure exceeds that support at equal distinct-trial count: C1 - C2 > 0",
+    "family_holm": [
+      "C1_exposure_support_fixed_own_minus_otherhalf_BA",
+      "C2_support_half_sameRun_testcopies_otherhalf_minus_placebo_BA",
+      "C3_exposure_minus_support_BA"
+    ],
+    "descriptive": "absolute BA; total half = own - P; support share = C2 / total (ratio of cohort means); full L - P on exposed / all / unexposed scored trials (replication within the new runs); full - total half; support of a half for unexposed trials; probability-scale versions; reproduction of R8-B's L and P arms (max |dp|, decision agreement)",
+    "interpretation_rule": "C1 / C2 are identified by randomisation at HALF exposure density (each arm holds about k/2 of the k extra distinct test trials). They do not identify the decomposition of the full L - P without further assumptions; the manuscript reports them as a half-density decomposition and replaces the R8-B learning-curve bound wording whatever the outcome",
+    "no_SESOI": "no equivalence region and no post-hoc relevance threshold; all results reported whatever their sign"
+  },
+  "design": {
+    "arms": "R4 frozen G2 manifest LEAKED (L) and PLACEBO (P), positionally aligned (verified: L and P differ exactly at the test-copy positions in all 210 folds); L1 = L with H2's copies replaced by P's rows at the same positions; L2 likewise for H1",
+    "split": "exposed scored trials of each (seed, participant, fold) into H1 / H2, stratified by session, origin run, class and multiplicity in L; numpy default_rng([9201, seed, participant, fold]); alternate assignment within a stratum, fair coin for the extra member of an odd stratum (metadata only, outcome-blind)",
+    "model": "EEGNet-8,2 as R4 / C2 / R8-B (kern 64 at 128 Hz, 4-40 Hz, per-trial channel z-score, 100 epochs, batch 64, Adam 1e-3, max-norm); one CRN group (L, L1, L2, P) with R8-B's pair seed _seed(8301, s, u, f) and group seed _seed(8302, s, u, f); A/A duplicate of L on every 10th fold (global order), must be exact",
+    "unit": "participant (14): BA pooled over a participant's exposed scored trials per seed (own-exposed / other-half predictions per trial), mean over seeds 42-44; exact sign-flip (2^14), Holm over C1-C3"
+  },
+  "environment": {
+    "python": "3.11.15",
+    "numpy": "1.26.4",
+    "torch": "2.9.1+cu128"
+  },
+  "data_sha256": {
+    "G2_eegnet_4_40_128hz.npy": null,
+    "R8_B_trial_arrays_PRIVATE.npz": null,
+    "G2_instances.npz": null,
+    "G2_distinct.npz": null,
+    "G2_manifest.npz": null
+  },
+  "plan": {
+    "folds": 210,
+    "commitment": null,
+    "half_size_median": 110.0,
+    "half_size_min": 50,
+    "max_abs_half_size_difference": 0,
+    "copy_row_imbalance_median": 0.0,
+    "copy_row_imbalance_max": 0,
+    "rows_median": 3180.0
+  }
+}

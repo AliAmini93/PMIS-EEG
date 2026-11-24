@@ -1,0 +1,197 @@
+{
+  "status": "FROZEN",
+  "protocol_id": "R5-G3-PMIS-TSLR-v1",
+  "frozen_utc": "2026-11-03T15:47:37.493864+00:00",
+  "decisions": {
+    "primary_base": "canonical CLEAN base C (one canonical row per non-test distinct trial)",
+    "primary_split": "S2 sorted-run-file replay, fold seed 42",
+    "primary_pairs": "all 8,080 R5 G1 seed-42 pairs (pairing PAIRING_SEED 42, outcome-blind)",
+    "primary_outcome": "class-balanced, participant-averaged own-copy minus matched same-run-neighbour-copy correct-class probability d = 0.5*[(p(a|C+a')-p(a|C+b'))+(p(b|C+b')-p(b|C+a'))]; 14 independent participants; probability points",
+    "inference": "participant-level 95% t interval (t_13) and exact two-sided sign-flip over 2^14 patterns (floor 2/2^14); seeds, folds, sessions and pairs are not independent observations",
+    "sesoi": "NONE: no SESOI, no equivalence region, no post-hoc relevance threshold; effect sizes and confidence intervals are reported without equivalence claims",
+    "model": "vendored frozen R4 TSLRw: multiplicity-weighted Karcher reference recomputed from scratch for EVERY arm, tangent map with that arm's reference, fresh LogisticRegression(C=1.0, max_iter=2000); no shared-reference approximation; no tuning",
+    "features": "R4 frozen OAS covariances G2_covs_8_30.npy (8-30 Hz, 4-s MI window), SHA-256 verified before load; a copy's features equal its canonical trial's features bit for bit (R4 G2b assertion)",
+    "controls": {
+      "C1": "different-run neighbour: C+[g'] with g a scored trial of same session/class, other acquisition run, copy in the pair's alias file; n = 0.5*[(p(a|C+b')-p(a|C+g'))+(p(b|C+a')-p(b|C+g'))]; 2,210 pairs",
+      "C2": "placebo non-test swap on the CANONICAL base only: C+[c'], C+[e'] with c,e non-test base trials of same session/class with copies in the pair's alias file; d_plc = 0.5*s*[(p(a|C+c')-p(a|C+e'))+(p(b|C+e')-p(b|C+c'))]; 4,890 pairs; NOT same-origin-run matched; support |C|",
+      "C3": "unexposed bystanders: mean |p(u|C+a')-p(u|C+b')| over unexposed scored trials of the fold (and of the same session/class) vs on-target change; descriptive only",
+      "C4": "multiset base sensitivity: d with base C+E (all non-test training-side copies)"
+    },
+    "position_sensitivity": "near |pos_a-pos_b| <= 6 vs far > 6 (G1 metadata median); descriptive slope",
+    "seeds": "primary fold seed 42; sensitivity fold seeds 43-46 (G1 rule per seed, primary estimand only, descriptive range); no seed or pair search",
+    "control_selection": "outcome-blind numpy default_rng([7101|7102, 42, participant, fold, a, b]) over sorted metadata candidates; placebo sign from the same 7102 stream",
+    "multiplicity": "primary: one test, unadjusted; Holm over the secondary family S1_balanced_accuracy_contrast, S2_C1_same_run_minus_different_run_neighbour, S3_C1_identity_minus_neighbour_contrast, S4_C2_placebo_nontest_swap, S5_C4_multiset_base_identity_swap, S6_position_near_le6, S7_position_far_gt6; descriptive quantities (C1 subset d, identity-vs-different-run, C3, context, slope, C2 dispersion, seed range) carry no p-based claim",
+    "reporting": "every result is reported whatever its sign or size; a null or negative primary effect is a reportable finding; no change of pairs, hyper-parameters, splits, estimands or thresholds after observing outcomes"
+  },
+  "stop_rules": [
+    "any provenance, hash, contract, plan-commitment or leakage assertion failure: STOP as BLOCKED before or during the run; no outcome is analysed",
+    "any fit exception, single-class arm, non-finite probability or reference, or identical reference between paired arms: STOP as BLOCKED (fail closed); nothing is silently dropped",
+    "start only if MemAvailable >= 4096 MB and PSI memory full avg10 <= 1.0; stop if MemAvailable < 2048 MB or PSI full avg10 > 5.0 during the run (STOPPED_RESOURCE; a later complete re-run with the same frozen code is allowed; partial results are never analysed)",
+    "workers = min(4, idle cores = cpus - ceil(load1)), at least 1; nice +10; never preempt the owner's jobs",
+    "LR convergence warnings are counted and reported, not a stop (as in R4)",
+    "no GPU, no EEGNet, no downloads, no environment changes"
+  ],
+  "scope_statements": [
+    "No independent confirmatory cohort: release and 14 participants are R4's, whose aggregate outcomes are known.",
+    "No new ML primitive: a fixed-support, paired, exact-refit estimator of self-influence minus matched cross-influence.",
+    "Uncertainty from same-run neural state: an exact copy is also the zero-lag state; d cannot separate same waveform from same moment.",
+    "An effect of exact-copy exposure is not a proven waveform-memorisation mechanism."
+  ],
+  "secondary_family": [
+    "S1_balanced_accuracy_contrast",
+    "S2_C1_same_run_minus_different_run_neighbour",
+    "S3_C1_identity_minus_neighbour_contrast",
+    "S4_C2_placebo_nontest_swap",
+    "S5_C4_multiset_base_identity_swap",
+    "S6_position_near_le6",
+    "S7_position_far_gt6"
+  ],
+  "position_cut": 6,
+  "seeds": {
+    "primary": 42,
+    "sensitivity": [
+      43,
+      44,
+      45,
+      46
+    ]
+  },
+  "resource_rules": {
+    "start_min_available_mb": 4096,
+    "run_min_available_mb": 2048,
+    "start_max_psi_full_avg10": 1.0,
+    "run_max_psi_full_avg10": 5.0,
+    "max_workers": 4,
+    "nice": 10
+  },
+  "environment": {
+    "python": "3.11.15",
+    "numpy": "1.26.4",
+    "scipy": "1.16.0",
+    "sklearn": "1.6.1",
+    "threadpoolctl": "3.6.0",
+    "thread_env": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1"
+    },
+    "blas_openmp_threads": [
+      1
+    ]
+  },
+  "data_sha256": {
+    "G2_instances.npz": null,
+    "G2_distinct.npz": null,
+    "G2_manifest.npz": null,
+    "G2_covs_8_30.npy": null,
+    "R5_G1_pairs_PRIVATE.json": null
+  },
+  "commitments": {
+    "plan_commitment_sha256": null,
+    "fit_counts": {
+      "42": {
+        "primary_canonical": 16160,
+        "C4_multiset": 16160,
+        "C1_neighbour": 2210,
+        "C2_placebo": 9780
+      },
+      "43": {
+        "primary_canonical": 14340
+      },
+      "44": {
+        "primary_canonical": 15480
+      },
+      "45": {
+        "primary_canonical": 16360
+      },
+      "46": {
+        "primary_canonical": 15220
+      },
+      "total": 105710
+    },
+    "pairs_per_seed": {
+      "42": 8080,
+      "43": 7170,
+      "44": 7740,
+      "45": 8180,
+      "46": 7610
+    },
+    "plan_checks": {
+      "42": {
+        "pairs": 8080,
+        "contract_pass_both_bases": true,
+        "manifest_cells_equal": 70,
+        "control_arm_pass_counts": {
+          "placebo_canonical": 4890,
+          "placebo_multiset_refused:placebo_requires_canonical_base": 4890,
+          "neighbour_canonical": 4420,
+          "neighbour_multiset": 4420
+        }
+      },
+      "43": {
+        "pairs": 7170,
+        "contract_pass_both_bases": true,
+        "manifest_cells_equal": 70,
+        "control_arm_pass_counts": null
+      },
+      "44": {
+        "pairs": 7740,
+        "contract_pass_both_bases": true,
+        "manifest_cells_equal": 70,
+        "control_arm_pass_counts": null
+      },
+      "45": {
+        "pairs": 8180,
+        "contract_pass_both_bases": true,
+        "manifest_cells_equal": 70,
+        "control_arm_pass_counts": null
+      },
+      "46": {
+        "pairs": 7610,
+        "contract_pass_both_bases": true,
+        "manifest_cells_equal": 70,
+        "control_arm_pass_counts": null
+      }
+    }
+  },
+  "output_schema": {
+    "public": [
+      "stage",
+      "protocol_id",
+      "protocol_sha256",
+      "git_head",
+      "status",
+      "timestamp_utc",
+      "preflight",
+      "resources",
+      "runtime",
+      "results"
+    ],
+    "results": [
+      "primary",
+      "secondary",
+      "descriptive",
+      "pair_counts"
+    ],
+    "summary_block": [
+      "n_pairs",
+      "n_participants",
+      "n_participants_dropped_missing_class",
+      "mean_points",
+      "ci95_points",
+      "ci95_excludes_zero",
+      "sd_between_participants_points",
+      "n_participants_positive",
+      "n_participants_negative",
+      "inference_enabled",
+      "exact_sign_flip_p (tested blocks only)",
+      "sign_flip_floor (tested blocks only)",
+      "holm_p_secondary_family (secondary only)"
+    ],
+    "private": [
+      "data/g3/G3_pair_scores_PRIVATE.npz",
+      "data/g3/G3_participant_effects_PRIVATE.json",
+      "data/g3/G3_run.log"
+    ]
+  }
+}

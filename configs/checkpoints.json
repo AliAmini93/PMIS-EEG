@@ -1,0 +1,18 @@
+{
+  "CBraMod": {
+    "filename": "pretrained_weights.pth",
+    "sha256": "0792cb808c14e6b7a2bb2ce1dff379bc47bc54c49a779825bdfeb33bf8157178"
+  },
+  "ST-EEGFormer-small": {
+    "filename": "checkpoint-300.pth",
+    "sha256": "98d2848abdaea7a143d399c07f67f8782e07dd66e7c309ddb058c7158a8a8b02"
+  },
+  "LaBraM-Base": {
+    "filename": "labram-base.pth",
+    "sha256": "7c50583826afac76c4ab18f43d958df40496c8229accc09ed6a227c9bb57c37c"
+  },
+  "LaBraM-VQ-NSP": {
+    "filename": "vqnsp.pth",
+    "sha256": "d8f14b4232f06a5c37b6386ab021c270dd4bfa12bfecdd60372dc8ac7b711101"
+  }
+}

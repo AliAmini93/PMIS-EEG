@@ -1,0 +1,23 @@
+{
+  "status": "FROZEN",
+  "protocol_id": "R8-C-CEILING-AUDIT-v1",
+  "frozen_utc": "2026-11-05T14:02:53.516261+00:00",
+  "status_of_evidence": "EXPLORATORY: every source was examined; the analysis plan and interpretation rule are in src/pmis_r8/ceiling.py (committed before the R8-A records existed)",
+  "source_sha256": {
+    "HS-Stroke_TSLR_G3": null,
+    "HS-Stroke_EEGNet_C2": null,
+    "Lee2019_TSLR_C3a": null,
+    "Lee2019_EEGNet_C3b": null,
+    "Lee2019_EEGNet_final_C6": null,
+    "Lee2019_EEGNet_earlystop_C6": null,
+    "Lee2019_Shallow_final_C6": null,
+    "Lee2019_Shallow_earlystop_C6": null,
+    "Shin2022_TSLR_R8A": null,
+    "Shin2022_EEGNet_R8A": null,
+    "Lee2019_TCFormer_final_R8D": null,
+    "Lee2019_TCFormer_earlystop_R8D": null,
+    "Lee2019_CBraMod_FT_final_R8E": null,
+    "Lee2019_CBraMod_FT_earlystop_R8E": null,
+    "Lee2019_CBraMod_probe_R8E1": null
+  }
+}

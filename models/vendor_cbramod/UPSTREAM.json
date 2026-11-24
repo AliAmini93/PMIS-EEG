@@ -1,0 +1,19 @@
+{
+  "repository": "https://github.com/wjq-learning/CBraMod",
+  "commit": "b9e961003214326972c567eff390e75b0287e32a",
+  "license": "MIT (Copyright (c) 2025 Jiquan Wang)",
+  "files": {
+    "models/cbramod.py": {
+      "upstream_sha256": "caa7c5a0e4acd488a6f625b56f7b54dc4e7190d6b68ef5b76dff2cef86874a14",
+      "edits": [
+        "from models.criss_cross_transformer import -> from .criss_cross_transformer import"
+      ],
+      "vendored_sha256": "0602b8cc0b8e134d923fb5d7bf095cd19abed77ce001fed58b6b8afc5fc66434"
+    },
+    "models/criss_cross_transformer.py": {
+      "upstream_sha256": "90e90b8c98ca7eb543c44e32afc29674d3f71cb090692ad9f82db3a43edf334c",
+      "edits": [],
+      "vendored_sha256": "719436b88e22e6c3c1aeaa303dc34edec0cb0f245af7f3967c5cc10b6edefe78"
+    }
+  }
+}

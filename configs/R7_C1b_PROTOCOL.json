@@ -1,0 +1,37 @@
+{
+  "status": "FROZEN",
+  "protocol_id": "R7-C1b-INDEPENDENT-KARCHER-AUDIT-v1",
+  "frozen_utc": "2026-11-04T13:07:31.536058+00:00",
+  "criteria_declared_before_any_fit": {
+    "K1_convergence": "every independent arm reference has Riemannian gradient norm ||J||_F <= 1e-8",
+    "K2_per_arm_agreement": "every independent correct-class probability is within 0.01 of the stored G3 value (G3 used sklearn lbfgs at tol 1e-4, whose solver error reached 0.006 in the R6-C1 valid subset)",
+    "K3_g3_public_numbers": "every G3 seed-42 public number (primary, S1-S7) recomputed from the independent arms differs from G3 by <= 0.05 points (S1 balanced accuracy: <= 0.5 BA points) in mean and both CI bounds, with identical participant sign counts",
+    "reporting": "each criterion reported as pass / fail; the earlier defective audit (R6-C1 A3) stays unchanged"
+  },
+  "solver": "pmis_r7.karcher_ls: weighted log-Euclidean start, Riemannian gradient descent on the Karcher objective with Armijo backtracking (gradient-norm acceptance below float64 resolution), tol 1e-10, stagnation stop; damped-Newton exact L2-logistic (C = 1, unpenalised intercept); no R4/sklearn code",
+  "environment": {
+    "python": "3.11.15",
+    "numpy": "1.26.4",
+    "scipy": "1.16.0",
+    "sklearn": "1.6.1"
+  },
+  "data_sha256": {
+    "G2_covs_8_30.npy": null,
+    "G3_pair_scores_PRIVATE.npz": null,
+    "G2_instances.npz": null,
+    "G2_distinct.npz": null,
+    "G2_manifest.npz": null
+  },
+  "g3_plan_commitment_reproduced": null,
+  "fits": {
+    "primary": 16160,
+    "multiset": 16160,
+    "neighbour": 2210,
+    "placebo": 9780,
+    "total": 44310
+  },
+  "resources": {
+    "max_workers": 4,
+    "nice": 10
+  }
+}
